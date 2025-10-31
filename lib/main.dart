@@ -1,7 +1,6 @@
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
-import 'package:e_commerce_app/views/pages/home_page.dart';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   runApp(const MyApp());
