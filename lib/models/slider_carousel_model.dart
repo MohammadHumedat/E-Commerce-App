@@ -1,5 +1,5 @@
 class SliderCarouselModel {
-   SliderCarouselModel({required this.id, required this.imageUrl});
+  SliderCarouselModel({required this.id, required this.imageUrl});
   final int id;
   final String imageUrl;
 }
@@ -13,7 +13,7 @@ List<SliderCarouselModel> dummyCarousel = [
   SliderCarouselModel(
     id: 2,
     imageUrl:
-        'https://img.freepik.com/free-vector/gradient-shopping-discount-horizontal-sale-banner_23-2150321996.jpg?semt=ais_hybrid&w=740&q=80',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEchTn83gZbeXOA_C__U_5Ip7HT99HRoBbbMpfeaRGfcuxS0UB1x_aKxNwJVP--OofhA8&usqp=CAU',
   ),
   SliderCarouselModel(
     id: 3,

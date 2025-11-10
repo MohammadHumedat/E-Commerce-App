@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/utils/app_router.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 
 import 'package:flutter/material.dart';
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'E-Commerce',
+     onGenerateRoute: AppRouter.onGenerateRoute,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: CustomBottomNavBar(),
+      home:const CustomBottomNavBar(),
     );
   }
 }
