@@ -35,7 +35,7 @@ class HomeTabView extends StatelessWidget {
                   FlutterCarousel.builder(
                     itemCount: state.dummyCarousel.length,
                     itemBuilder: (context, index, realIndex) {
-                      final item = dummyCarousel[index];
+                      final item = state.dummyCarousel[index];
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: Stack(
@@ -136,14 +136,14 @@ class HomeTabView extends StatelessWidget {
                     itemBuilder: (context, index) {
                       return InkWell(
                         child: ProductItemCard(
-                          productItem: productItems[index],
+                          productItem: state.productItems[index],
                         ),
                         onTap: () {
                           // Navigate to product details page
                           Navigator.pushNamed(
                             context,
                             AppRoutes.productDetails,
-                            arguments: productItems[index],
+                            arguments: state.productItems[index].id,
                           );
                         },
                       );
