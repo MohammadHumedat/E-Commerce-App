@@ -15,3 +15,8 @@ final class ProductDetailsError extends ProductDetailsState {
   ProductDetailsError(this.message);
   final String message;
 }
+
+final class ProductQuantity extends ProductDetailsState {
+  ProductQuantity(this.quantity);
+  final int quantity;
+}

@@ -19,4 +19,24 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       emit(ProductDetailsError('Failed to load product details'));
     }
   }
+
+  void incrementQuantity(productId) {
+    final selectedProduct = productItems.indexWhere(
+      (item) => item.id == productId,
+    );
+    productItems[selectedProduct] = productItems[selectedProduct].copyWith(
+      quantity: productItems[selectedProduct].quantity + 1,
+    );
+    emit(ProductQuantity(productItems[selectedProduct].quantity));
+  }
+
+  void decrementQuantity(productId) {
+    final selectedProduct = productItems.indexWhere(
+      (item) => item.id == productId,
+    );
+    productItems[selectedProduct] = productItems[selectedProduct].copyWith(
+      quantity: productItems[selectedProduct].quantity - 1,
+    );
+    emit(ProductQuantity(productItems[selectedProduct].quantity));
+  }
 }
