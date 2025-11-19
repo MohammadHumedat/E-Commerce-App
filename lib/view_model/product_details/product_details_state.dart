@@ -20,3 +20,14 @@ final class ProductQuantity extends ProductDetailsState {
   ProductQuantity(this.quantity);
   final int quantity;
 }
+
+final class ProductSizeSelected extends ProductDetailsState {
+  ProductSizeSelected(this.size);
+  final ProductSize size;
+}
+
+final class ProductAddedToCart extends ProductDetailsState {
+  ProductAddedToCart( this.productId);
+  int productId;
+}
+final class ProductAddingToCart extends ProductDetailsState {}

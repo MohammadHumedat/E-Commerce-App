@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
 import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/models/product_item.dart';
-import 'package:e_commerce_app/models/slider_carousel_model.dart';
+
 import 'package:e_commerce_app/view_model/home_cubit/home_cubit.dart';
 import 'package:e_commerce_app/views/widgets/product_item_cart.dart';
 import 'package:flutter/material.dart';
