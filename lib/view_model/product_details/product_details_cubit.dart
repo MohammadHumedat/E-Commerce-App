@@ -74,7 +74,8 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     await Future.delayed(const Duration(milliseconds: 500));
 
     final newItem = AddToCartModel(
-      productId: productId,
+      Id: productId,
+      product: currentProduct,
       quantity: currentProduct.quantity,
       size: selectedSize!,
     );

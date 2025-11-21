@@ -1,4 +1,7 @@
+import 'package:e_commerce_app/view_model/cart_cubit/cart_cubit.dart';
+import 'package:e_commerce_app/view_model/home_cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 
 import 'package:e_commerce_app/views/pages/cart_page.dart';
@@ -18,11 +21,25 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
 
   final List<PersistentTabConfig> _tabs = [
     PersistentTabConfig(
-      screen: const HomePage(),
+      screen: BlocProvider(
+        create: (context) {
+          final cubit = HomeCubit();
+          cubit.loadHomeData();
+          return cubit;
+        },
+        child: const HomePage(),
+      ),
       item: ItemConfig(icon: const Icon(Icons.home), title: 'Home'),
     ),
     PersistentTabConfig(
-      screen: const CartPage(),
+      screen: BlocProvider(
+        create: (context) {
+          final cubit = CartCubit();
+          cubit.getCartItems();
+          return cubit;
+        },
+        child: const CartPage(),
+      ),
       item: ItemConfig(icon: const Icon(Icons.shopping_cart), title: 'Cart'),
     ),
     PersistentTabConfig(
@@ -47,7 +64,7 @@ class _CustomBottomNavBarState extends State<CustomBottomNavBar> {
       controller: _controller,
       tabs: _tabs,
       backgroundColor: Colors.white,
-      stateManagement: true,
+      stateManagement: false,
       keepNavigatorHistory: true,
       resizeToAvoidBottomInset: true,
       handleAndroidBackButtonPress: true,
