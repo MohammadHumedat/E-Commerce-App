@@ -49,7 +49,7 @@ class ProductDetailsPage extends StatelessWidget {
         }
 
         final product = state.product;
-
+        // final selectitedSize = state.selectedSize;
         return Scaffold(
           body: CustomScrollView(
             slivers: [
@@ -382,8 +382,28 @@ class ProductDetailsPage extends StatelessWidget {
                                     ),
                                   ),
                                   onPressed: () {
-                                    cubit.addToCart(productId);
+                                    if (cubit.selectedSize != null) {
+                                      cubit.addToCart(productId);
+                                    } else {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Please select a size before adding to cart',
+                                          ),
+                                          backgroundColor: Colors.redAccent,
+                                          behavior: SnackBarBehavior.floating,
+                                          margin: EdgeInsets.symmetric(
+                                            horizontal: 20,
+                                            vertical: 10,
+                                          ),
+                                          duration: Duration(seconds: 1),
+                                        ),
+                                      );
+                                    }
                                   },
+
                                   child: const Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [

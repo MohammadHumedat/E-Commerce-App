@@ -1,18 +1,20 @@
+import 'package:e_commerce_app/models/product_item.dart';
+
 class AddToCartModel {
-  final int productId;
-  final int quantity;
-  final String size;
   AddToCartModel({
     required this.productId,
     required this.quantity,
     required this.size,
   });
+  final int productId;
+  final int quantity;
+  final ProductSize size;
 
-  AddToCartModel copyWith({int? productId, int? quantity, String? size}) {
+  AddToCartModel copyWith({int? productId, int? quantity, ProductSize? size}) {
     return AddToCartModel(
       productId: productId ?? this.productId,
       quantity: quantity ?? this.quantity,
-      size: size ?? this.size,
+      size: size ?? this.size
     );
   }
 }
