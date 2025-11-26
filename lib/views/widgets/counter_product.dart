@@ -1,35 +1,17 @@
+import 'package:e_commerce_app/Constants/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class ModernCounter extends StatefulWidget {
-  final int initialValue;
-  final Function(int)? onChanged;
+class ModernCounter extends StatelessWidget {
 
-  const ModernCounter({super.key, this.initialValue = 1, this.onChanged});
-
-  @override
-  State<ModernCounter> createState() => _ModernCounterState();
-}
-
-class _ModernCounterState extends State<ModernCounter> {
-  late int value;
-
-  @override
-  void initState() {
-    super.initState();
-    value = widget.initialValue;
-  }
-
-  void increase() {
-    setState(() => value++);
-    widget.onChanged?.call(value);
-  }
-
-  void decrease() {
-    if (value > 1) {
-      setState(() => value--);
-      widget.onChanged?.call(value);
-    }
-  }
+  const ModernCounter({
+    super.key,
+    required this.value,
+    required this.onIncrease,
+    required this.onDecrease,
+  });
+  final int value;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
 
   @override
   Widget build(BuildContext context) {
@@ -38,35 +20,39 @@ class _ModernCounterState extends State<ModernCounter> {
       decoration: BoxDecoration(
         color: Colors.blueGrey.shade50,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blueGrey.withOpacity(0.15),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ---------------- MINUS BUTTON ----------------
+          // ----------- DECREASE -----------
           GestureDetector(
-            onTap: decrease,
             behavior: HitTestBehavior.translucent,
-            child: Container(
-              width: 42,
-              height: 42,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+            onTap: () {
+              if (value > 1) {
+                onDecrease();
+              }
+            },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Icon(
+                  Icons.remove,
+                  size: 22,
+                  color: value > 1 ? Colors.black : Colors.deepOrange.shade200,
+                ),
               ),
-              child: const Icon(Icons.remove, size: 22),
             ),
           ),
 
           const SizedBox(width: 14),
 
-          // ---------------- VALUE ----------------
+          /// ---------------- VALUE ----------------
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             transitionBuilder: (child, anim) =>
@@ -80,16 +66,24 @@ class _ModernCounterState extends State<ModernCounter> {
 
           const SizedBox(width: 14),
 
-          // ---------------- PLUS BUTTON ----------------
+          // ----------- INCREASE -----------
           GestureDetector(
-            onTap: increase,
             behavior: HitTestBehavior.translucent,
-            child: Container(
+            onTap: onIncrease,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: Colors.blueAccent,
+                color: AppColors.primaryColor,
                 borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryColor.withOpacity(0.3),
+                    blurRadius: 6,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
               ),
               child: const Icon(Icons.add, size: 22, color: Colors.white),
             ),

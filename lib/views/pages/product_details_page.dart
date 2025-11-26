@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
 import 'package:e_commerce_app/models/product_item.dart';
+
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
 import 'package:e_commerce_app/views/widgets/counter_product.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class ProductDetailsPage extends StatelessWidget {
         }
 
         final product = state.product;
-        // final selectitedSize = state.selectedSize;
+       
         return Scaffold(
           body: CustomScrollView(
             slivers: [
@@ -114,6 +115,7 @@ class ProductDetailsPage extends StatelessWidget {
                       BoxShadow(
                         blurRadius: 15,
                         offset: const Offset(0, -4),
+                        // ignore: deprecated_member_use
                         color: Colors.black.withOpacity(0.05),
                       ),
                     ],
@@ -139,16 +141,23 @@ class ProductDetailsPage extends StatelessWidget {
                           ),
 
                           /// COUNTER (only this part rebuilds)
+                          /// COUNTER (only this part rebuilds)
                           BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
                             buildWhen: (_, current) =>
-                                current is ProductQuantity ||
                                 current is ProductDetailsLoaded,
                             builder: (context, newState) {
-                              final quantity = newState is ProductQuantity
-                                  ? newState.quantity
-                                  : product.quantity;
+                              final quantity =
+                                  cubit.cartQuantity; // Use cubit.cartQuantity
 
-                              return const ModernCounter(initialValue: 1);
+                              return ModernCounter(
+                                value: quantity,
+                                onIncrease: () {
+                                  cubit.incrementQuantity(product.id);
+                                },
+                                onDecrease: () {
+                                  cubit.decrementQuantity(product.id);
+                                },
+                              );
                             },
                           ),
                         ],
@@ -205,16 +214,17 @@ class ProductDetailsPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 10),
-
+                      // SIZE OPTIONS LIST
                       BlocBuilder<ProductDetailsCubit, ProductDetailsState>(
                         bloc: cubit,
                         buildWhen: (_, current) =>
-                            current is ProductSizeSelected ||
                             current is ProductDetailsLoaded,
                         builder: (context, state) {
                           return Row(
                             children: ProductSize.values.map((size) {
-                              final isSelected = size == product.size;
+                              final isSelected =
+                                  size ==
+                                  cubit.selectedSize; // Use cubit.selectedSize
 
                               return Padding(
                                 padding: const EdgeInsets.only(right: 10),
@@ -239,6 +249,7 @@ class ProductDetailsPage extends StatelessWidget {
                                           ? [
                                               BoxShadow(
                                                 color: AppColors.primaryColor
+                                                    // ignore: deprecated_member_use
                                                     .withOpacity(0.3),
                                                 blurRadius: 8,
                                                 offset: const Offset(0, 3),

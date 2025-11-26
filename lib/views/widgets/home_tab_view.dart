@@ -35,7 +35,7 @@ class HomeTabView extends StatelessWidget {
                   FlutterCarousel.builder(
                     itemCount: state.dummyCarousel.length,
                     itemBuilder: (context, index, realIndex) {
-                      final item = state.dummyCarousel[index];
+                      
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: Stack(

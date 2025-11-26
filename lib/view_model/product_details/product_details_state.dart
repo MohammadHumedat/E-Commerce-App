@@ -1,6 +1,6 @@
 part of 'product_details_cubit.dart';
 
-sealed class ProductDetailsState {}
+abstract class ProductDetailsState {}
 
 final class ProductDetailsInitial extends ProductDetailsState {}
 
@@ -16,18 +16,9 @@ final class ProductDetailsError extends ProductDetailsState {
   final String message;
 }
 
-final class ProductQuantity extends ProductDetailsState {
-  ProductQuantity(this.quantity);
-  final int quantity;
-}
-
-final class ProductSizeSelected extends ProductDetailsState {
-  ProductSizeSelected(this.size);
-  final ProductSize size;
-}
+final class ProductAddingToCart extends ProductDetailsState {}
 
 final class ProductAddedToCart extends ProductDetailsState {
-  ProductAddedToCart( this.productId);
-  int productId;
+  ProductAddedToCart(this.productId);
+  final int productId;
 }
-final class ProductAddingToCart extends ProductDetailsState {}

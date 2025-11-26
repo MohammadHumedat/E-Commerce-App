@@ -65,7 +65,7 @@ class CategoryTabView extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "${category.productCount} products",
+                        '${category.productCount} products',
                         style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       ),
                     ],

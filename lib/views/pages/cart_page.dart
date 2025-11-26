@@ -1,4 +1,4 @@
-import 'package:e_commerce_app/models/add_to_cart_model.dart';
+
 import 'package:e_commerce_app/view_model/cart_cubit/cart_cubit.dart';
 import 'package:e_commerce_app/views/widgets/cart_item.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +10,14 @@ class CartPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<CartCubit>(context);
     return Scaffold(
       body: BlocBuilder<CartCubit, CartState>(
-        bloc: BlocProvider.of<CartCubit>(context),
+        bloc: cubit,
+        buildWhen: (previous, current) =>
+            current is CartPageLoaded ||
+            current is CartPageLoading ||
+            current is CartPageError,
         builder: (context, state) {
           if (state is CartPageLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -27,21 +32,14 @@ class CartPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListView.separated(
-                    itemCount: addToCartItems.length,
+                    itemCount: cartItems.length,
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) {
-                      final item = addToCartItems[index];
+                      final item = cartItems[index];
                       return CartItem(
                         item: item,
-                        onQuantityChanged: (newQuantity) {
-                          BlocProvider.of<CartCubit>(
-                            context,
-                          ).updateQuantity(item, newQuantity);
-                        },
-                        onRemove: () {
-                          addToCartItems.removeAt(index);
-                        },
+                        onRemove: () => cubit.removeItem(index),
                       );
                     },
                     separatorBuilder: (context, index) => Container(

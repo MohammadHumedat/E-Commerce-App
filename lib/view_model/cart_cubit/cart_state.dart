@@ -9,8 +9,9 @@ final class CartPageLoading extends CartState{
 }
 
 final class CartPageLoaded extends CartState{
-  CartPageLoaded( this.cartItems);
+  CartPageLoaded( this.cartItems, {this.itemId =0});
  final List<AddToCartModel>cartItems;
+ final int itemId; 
 }
 final class CartPageError extends CartState{
 CartPageError(this.massage);

@@ -2,9 +2,8 @@ import 'package:e_commerce_app/models/product_item.dart';
 import 'package:flutter/material.dart';
 
 class ProductItemCard extends StatelessWidget {
-  final ProductItem productItem;
-
   const ProductItemCard({super.key, required this.productItem});
+  final ProductItem productItem;
 
   @override
   Widget build(BuildContext context) {

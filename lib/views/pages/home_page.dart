@@ -1,10 +1,10 @@
-import 'package:e_commerce_app/view_model/home_cubit/home_cubit.dart';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
 import 'package:e_commerce_app/views/widgets/category_tab_view.dart';
 import 'package:e_commerce_app/views/widgets/home_tab_view.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,11 +15,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   // Important Note: Tab controller works in stateful not stateless.
-  late TabController _TabController;
+  late TabController _tabController;
 
   @override
   void initState() {
-    _TabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     super.initState();
   }
 
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
               ),
               const SizedBox(height: 25),
               TabBar(
-                controller: _TabController,
+                controller: _tabController,
                 unselectedLabelColor: AppColors.grey,
                 labelColor: AppColors.primaryColor,
                 indicatorColor: AppColors.primaryColor,
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     
               Expanded(
                 child: TabBarView(
-                  controller: _TabController,
+                  controller: _tabController,
                   children: const [HomeTabView(), CategoryTabView()],
                 ),
               ),

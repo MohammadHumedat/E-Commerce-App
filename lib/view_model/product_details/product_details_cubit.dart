@@ -8,6 +8,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   ProductDetailsCubit() : super(ProductDetailsInitial());
 
   ProductSize? selectedSize;
+  int cartQuantity = 1; // NEW: separate counter for cart quantity
 
   Future<void> fetchProductDetails(int productId) async {
     emit(ProductDetailsLoading());
@@ -16,6 +17,10 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       final product = productItems.firstWhere((p) => p.id == productId);
+
+      // Reset cart quantity when loading a new product
+      cartQuantity = 1;
+      selectedSize = null;
 
       emit(ProductDetailsLoaded(product));
     } catch (e) {
@@ -28,11 +33,11 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
     final currentProduct = (state as ProductDetailsLoaded).product;
 
-    emit(
-      ProductDetailsLoaded(
-        currentProduct.copyWith(quantity: currentProduct.quantity + 1),
-      ),
-    );
+    // Don't allow adding more than available stock
+    if (cartQuantity < currentProduct.quantity) {
+      cartQuantity++;
+      emit(ProductDetailsLoaded(currentProduct)); // Re-emit the loaded state
+    }
   }
 
   void decrementQuantity(int productId) {
@@ -40,12 +45,9 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
 
     final currentProduct = (state as ProductDetailsLoaded).product;
 
-    if (currentProduct.quantity > 1) {
-      emit(
-        ProductDetailsLoaded(
-          currentProduct.copyWith(quantity: currentProduct.quantity - 1),
-        ),
-      );
+    if (cartQuantity > 1) {
+      cartQuantity--;
+      emit(ProductDetailsLoaded(currentProduct)); // Re-emit the loaded state
     }
   }
 
@@ -65,7 +67,8 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     final currentProduct = (state as ProductDetailsLoaded).product;
 
     if (selectedSize == null) {
-      emit(ProductDetailsError("You must select a size first"));
+      emit(ProductDetailsError('You must select a size first'));
+      emit(ProductDetailsLoaded(currentProduct)); // Return to loaded state
       return;
     }
 
@@ -74,14 +77,18 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     await Future.delayed(const Duration(milliseconds: 500));
 
     final newItem = AddToCartModel(
-      Id: productId,
+      id: productId,
       product: currentProduct,
-      quantity: currentProduct.quantity,
+      quantity: cartQuantity, // Use cartQuantity instead of product.quantity
       size: selectedSize!,
     );
 
     addToCartItems.add(newItem);
 
     emit(ProductAddedToCart(productId));
+
+    // Reset quantity after adding to cart and return to loaded state
+    cartQuantity = 1;
+    emit(ProductDetailsLoaded(currentProduct));
   }
 }
