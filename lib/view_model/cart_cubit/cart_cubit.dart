@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 
-
 part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
@@ -9,24 +8,34 @@ class CartCubit extends Cubit<CartState> {
 
   void getCartItems() async {
     emit(CartPageLoading());
-    emit(CartPageLoaded(addToCartItems));
+    await Future.delayed(const Duration(seconds: 1));
+    double totalPrice = addToCartItems.fold(
+      0,
+      (sum, item) => sum + item.totalPrice,
+    );
+    emit(CartPageLoaded(addToCartItems, totalPrice));
   }
 
   Future<void> updateQuantityById(int productId, int newQuantity) async {
-  final index = addToCartItems.indexWhere((item) => item.product.id == productId);
-
-  if (index != -1) {
-    addToCartItems[index] = addToCartItems[index].copyWith(
-      quantity: newQuantity,
+    final index = addToCartItems.indexWhere(
+      (item) => item.product.id == productId,
     );
 
-    emit(CartPageLoaded(List.from(addToCartItems)));
+    if (index != -1) {
+      addToCartItems[index] = addToCartItems[index].copyWith(
+        quantity: newQuantity,
+      );
+
+      double totalPrice = addToCartItems.fold(
+        0,
+        (sum, item) => sum + item.totalPrice,
+      );
+      emit(CartPageLoaded(List.from(addToCartItems), totalPrice));
+    }
   }
-}
 
   // Remove the item when click on remove item.
   Future<void> removeItem(int index) async {
-  addToCartItems.removeAt(index);
-  emit(CartPageLoaded(List.from(addToCartItems)));
-}
+    addToCartItems.removeAt(index);
+  }
 }
