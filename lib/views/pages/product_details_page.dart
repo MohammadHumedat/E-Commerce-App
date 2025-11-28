@@ -50,7 +50,7 @@ class ProductDetailsPage extends StatelessWidget {
         }
 
         final product = state.product;
-       
+
         return Scaffold(
           body: CustomScrollView(
             slivers: [

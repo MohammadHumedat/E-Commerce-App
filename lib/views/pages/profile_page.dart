@@ -5,10 +5,10 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
+    return 
+      const Center(
         child: Text('Profile page'),
-      ),
+    
     );
   }
 }

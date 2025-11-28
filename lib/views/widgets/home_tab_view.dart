@@ -35,7 +35,6 @@ class HomeTabView extends StatelessWidget {
                   FlutterCarousel.builder(
                     itemCount: state.dummyCarousel.length,
                     itemBuilder: (context, index, realIndex) {
-                      
                       return ClipRRect(
                         borderRadius: BorderRadius.circular(16),
                         child: Stack(
@@ -140,8 +139,7 @@ class HomeTabView extends StatelessWidget {
                         ),
                         onTap: () {
                           // Navigate to product details page
-                          Navigator.pushNamed(
-                            context,
+                          Navigator.of(context, rootNavigator: true).pushNamed(
                             AppRoutes.productDetails,
                             arguments: state.productItems[index].id,
                           );

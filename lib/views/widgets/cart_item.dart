@@ -46,7 +46,7 @@ class CartItem extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ---------------- Product Image ----------------
+                //Product Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
@@ -59,7 +59,7 @@ class CartItem extends StatelessWidget {
 
                 const SizedBox(width: 12),
 
-                // ---------------- Product Info ----------------
+                // Product Info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +73,7 @@ class CartItem extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '\$${item.product.price.toStringAsFixed(2)}',
+                        '\$${item.totalPrice.toStringAsFixed(2)}',
                         style: const TextStyle(
                           fontSize: 15,
                           color: Colors.green,
@@ -92,7 +92,7 @@ class CartItem extends StatelessWidget {
                   ),
                 ),
 
-                // ---------------- Quantity + Remove ----------------
+                //  Quantity + Remove
                 Column(
                   children: [
                     ModernCounter(

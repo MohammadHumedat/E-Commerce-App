@@ -78,7 +78,7 @@ class CategoryTabView extends StatelessWidget {
                   child: Icon(
                     Icons.arrow_forward_ios,
                     size: 18,
-                    color: AppColors.grey,
+                    color: AppColors.grey1,
                   ),
                 ),
               ],
