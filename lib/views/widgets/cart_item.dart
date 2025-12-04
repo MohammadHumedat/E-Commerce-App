@@ -18,7 +18,7 @@ class CartItem extends StatelessWidget {
       buildWhen: (previous, current) =>
           current is CartPageLoaded ||
           current is CartPageLoading ||
-          current is CartPageError,
+          current is CartPageError || current is CartItemRemoved,
       builder: (context, state) {
         if (state is CartPageLoading) {
           return const Center(child: CircularProgressIndicator());
