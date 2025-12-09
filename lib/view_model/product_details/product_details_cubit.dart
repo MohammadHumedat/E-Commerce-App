@@ -81,7 +81,7 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
       product: currentProduct,
       quantity: cartQuantity, // Use cartQuantity instead of product.quantity
       size: selectedSize!,
-      totalPrice: currentProduct.price * cartQuantity,
+      
     );
 
     addToCartItems.add(newItem);

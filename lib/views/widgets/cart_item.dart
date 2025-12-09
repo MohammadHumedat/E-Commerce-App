@@ -5,10 +5,9 @@ import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CartItem extends StatelessWidget {
-  const CartItem({super.key, required this.item, required this.onRemove});
+  const CartItem({super.key, required this.item});
 
   final AddToCartModel item;
-  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,7 @@ class CartItem extends StatelessWidget {
       buildWhen: (previous, current) =>
           current is CartPageLoaded ||
           current is CartPageLoading ||
-          current is CartPageError || current is CartItemRemoved,
+          current is CartPageError,
       builder: (context, state) {
         if (state is CartPageLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -46,7 +45,7 @@ class CartItem extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //Product Image
+                // The Product Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
@@ -65,6 +64,7 @@ class CartItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
+                        // Product Name
                         item.product.productName,
                         style: const TextStyle(
                           fontSize: 16,
@@ -72,13 +72,29 @@ class CartItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        '\$${item.totalPrice.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 15,
-                          color: Colors.green,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      BlocBuilder<CartCubit, CartState>(
+                        buildWhen: (previous, current) =>
+                            current is CartPageLoaded,
+                        builder: (context, state) {
+                          if (state is CartPageLoaded) {
+                            final currentItem = state.cartItems.firstWhere(
+                              (element) =>
+                                  element.product.id == item.product.id &&
+                                  element.size == item.size,
+                            );
+
+                            return Text(
+                              '\$${(currentItem.quantity * currentItem.product.price).toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            );
+                          }
+
+                          return const SizedBox.shrink();
+                        },
                       ),
                       const SizedBox(height: 6),
                       Text(
@@ -113,7 +129,9 @@ class CartItem extends StatelessWidget {
                       },
                     ),
                     IconButton(
-                      onPressed: onRemove,
+                      onPressed: () {
+                        cartCubit.removeItemById(item.product.id);
+                      },
                       icon: const Icon(Icons.delete, color: Colors.red),
                     ),
                   ],

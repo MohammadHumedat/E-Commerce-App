@@ -6,15 +6,16 @@ class AddToCartModel {
     required this.product,
     required this.quantity,
     required this.size,
-  required this.totalPrice,
   });
+
   final int id;
   final ProductItem product;
   final int quantity;
   final ProductSize size;
-  final double totalPrice;
 
-  double get itemTotalPrice => product.price * quantity;
+
+  double get totalPrice => product.price * quantity;
+
   AddToCartModel copyWith({
     int? id,
     ProductItem? product,
@@ -26,10 +27,8 @@ class AddToCartModel {
       product: product ?? this.product,
       quantity: quantity ?? this.quantity,
       size: size ?? this.size,
-      totalPrice: totalPrice 
     );
   }
-
 }
 
 List<AddToCartModel> addToCartItems = [];

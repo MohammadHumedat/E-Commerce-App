@@ -1,5 +1,6 @@
 // This class to be implemented for managing application routes.
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
+import 'package:e_commerce_app/views/pages/checkout_page.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 import 'package:e_commerce_app/views/pages/product_details_page.dart';
@@ -11,6 +12,8 @@ class AppRouter {
       case '/home':
         return MaterialPageRoute(builder: (_) => const CustomBottomNavBar());
 
+      case '/checkout_page':
+        return MaterialPageRoute(builder: (_) => const CheckoutPage());
       case '/product_details':
         final productId = settings.arguments as int;
         return MaterialPageRoute(

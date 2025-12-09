@@ -9,4 +9,6 @@ class AppColors {
   static Color? white = Colors.grey[70];
 
   static Color? scaffoldBackgroundColor = Colors.grey[200];
+
+  static Color? scaffoldBackground;
 }

@@ -1,4 +1,5 @@
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/view_model/cart_cubit/cart_cubit.dart';
 import 'package:e_commerce_app/views/widgets/cart_item.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,7 @@ class CartPage extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     final item = cartItems[index];
-                    return CartItem(
-                      item: item,
-                      onRemove: () => cubit.removeItem(index),
-                    );
+                    return CartItem(item: item);
                   },
                   separatorBuilder: (context, index) => Container(
                     height: 1.2,
@@ -91,6 +89,7 @@ class CartPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
+                // Checkout Button
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: SizedBox(
@@ -102,7 +101,13 @@ class CartPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        // Navigate to checkout page
+                        Navigator.of(
+                          context,
+                          rootNavigator: true,
+                        ).pushNamed(AppRoutes.checkoutPage);
+                      },
                       child: const Text(
                         'Proceed to Checkout',
                         style: TextStyle(

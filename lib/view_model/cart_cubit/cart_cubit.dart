@@ -1,4 +1,3 @@
-import 'package:e_commerce_app/views/widgets/cart_item.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 
@@ -36,13 +35,15 @@ class CartCubit extends Cubit<CartState> {
   }
 
   // Remove the item when click on remove item.
-  Future<void> removeItem(int index) async {
-    addToCartItems.removeAt(index);
-    double totalPrice = addToCartItems.fold(
-      0,
-      (sum, item) => sum + item.totalPrice,
-    );
-    emit(CartItemRemoved(index));
-    emit(CartPageLoaded(List.from(addToCartItems), totalPrice));
-  }
+  Future<void> removeItemById(int productId) async {
+  addToCartItems.removeWhere((item) => item.product.id == productId);
+
+  double totalPrice = addToCartItems.fold(
+    0,
+    (sum, item) => sum + item.totalPrice,
+  );
+
+  emit(CartItemRemoved(productId));
+  emit(CartPageLoaded(List.from(addToCartItems), totalPrice));
+}
 }
