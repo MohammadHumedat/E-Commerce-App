@@ -1,3 +1,5 @@
+import 'package:e_commerce_app/models/Payment_cart_model.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 
@@ -18,11 +20,15 @@ class CheckoutCubit extends Cubit<CheckoutState> {
         0,
         (previous, element) => previous + element.quantity,
       );
+      final chosenPaymentCard = dummyPaymentCardList.isNotEmpty
+          ? dummyPaymentCardList.first
+          : null;
       emit(
         CheckoutLoadedState(
           cartItems: cartItems,
           totalPrice: subTotal + 10,
           numOfProduct: numOfProduct,
+          paymentCards: chosenPaymentCard,
         ),
       );
     } catch (e) {

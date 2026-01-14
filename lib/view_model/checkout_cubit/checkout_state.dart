@@ -11,10 +11,12 @@ final class CheckoutLoadedState extends CheckoutState {
     required this.cartItems,
     required this.totalPrice,
     required this.numOfProduct,
+    required this.paymentCards,
   });
   final List<AddToCartModel> cartItems;
   final double totalPrice;
   final int numOfProduct;
+  final PaymentCardModel ?paymentCards;
 }
 
 final class CheckoutErrorState extends CheckoutState {

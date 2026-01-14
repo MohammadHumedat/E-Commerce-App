@@ -1,4 +1,6 @@
 // This class to be implemented for managing application routes.
+
+import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
 import 'package:e_commerce_app/views/pages/checkout_page.dart';
 import 'package:e_commerce_app/views/pages/add_new_card.dart';
@@ -28,7 +30,12 @@ class AppRouter {
           ),
         );
       case '/payment_method':
-        return MaterialPageRoute(builder: (_) => const AddNewCard());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => AddCardCubit(),
+            child: const AddNewCard(),
+          ),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

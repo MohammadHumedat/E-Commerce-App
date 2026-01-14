@@ -1,6 +1,9 @@
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
+import 'package:e_commerce_app/view_model/payment_card/card_state.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import for FilteringTextInputFormatter
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import for FilteringTextInputFormatter
 
 class AddNewCard extends StatefulWidget {
   const AddNewCard({super.key});
@@ -10,14 +13,14 @@ class AddNewCard extends StatefulWidget {
 }
 
 class _AddNewCardState extends State<AddNewCard> {
-  //  Initialize Controllers for all form fields
+  //Initialize Controllers for all form fields
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _cardHolderController = TextEditingController();
   final TextEditingController _expiryDateController = TextEditingController();
   final TextEditingController _cvvController = TextEditingController();
 
-  // 2. Dummy State for Card Display (can be replaced with provider/bloc)
+  // Dummy State for Card Display (can be replaced with provider/bloc)
   String _last4Digits = '****';
   String _cardHolderName = 'CARD HOLDER';
   String _expiryDate = 'MM/YY';
@@ -25,7 +28,7 @@ class _AddNewCardState extends State<AddNewCard> {
   @override
   void initState() {
     super.initState();
-    // Listen to changes for the Card Preview
+    //Listen to changes for the Card Preview
     _cardNumberController.addListener(_updateCardPreview);
     _cardHolderController.addListener(_updateCardPreview);
     _expiryDateController.addListener(_updateCardPreview);
@@ -33,7 +36,7 @@ class _AddNewCardState extends State<AddNewCard> {
 
   void _updateCardPreview() {
     setState(() {
-      // Update Card Number Preview (last 4 digits)
+      //Update Card Number Preview (last 4 digits)
       String number = _cardNumberController.text.replaceAll(' ', '');
       if (number.length >= 4) {
         _last4Digits = number.substring(number.length - 4);
@@ -41,12 +44,12 @@ class _AddNewCardState extends State<AddNewCard> {
         _last4Digits = '****';
       }
 
-      // Update Card Holder Name
+      //Update Card Holder Name
       _cardHolderName = _cardHolderController.text.isEmpty
           ? 'CARD HOLDER'
           : _cardHolderController.text.toUpperCase();
 
-      // Update Expiry Date
+      //Update Expiry Date
       _expiryDate = _expiryDateController.text.isEmpty
           ? 'MM/YY'
           : _expiryDateController.text;
@@ -55,7 +58,7 @@ class _AddNewCardState extends State<AddNewCard> {
 
   @override
   void dispose() {
-    // Performance: Dispose controllers to free up memory
+    //Performance: Dispose controllers to free up memory
     _cardNumberController.dispose();
     _cardHolderController.dispose();
     _expiryDateController.dispose();
@@ -63,7 +66,7 @@ class _AddNewCardState extends State<AddNewCard> {
     super.dispose();
   }
 
-  // 4. Custom Widget for the Card Preview (Modern UI)
+  //Custom Widget for the Card Preview (Modern UI)
   Widget _buildCardPreview(BuildContext context) {
     return Container(
       height: 200,
@@ -291,24 +294,50 @@ class _AddNewCardState extends State<AddNewCard> {
           16,
           8 + MediaQuery.of(context).padding.bottom,
         ),
-        child: ElevatedButton(
-          onPressed: _saveCard,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 5,
-          ),
-          child: const Text(
-            'Save Card',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+        child: BlocConsumer<AddCardCubit, AddCardState>(
+          listener: (context, state) {
+            if (state is CardSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Card added successfully!')),
+              );
+              Navigator.pop(context); // Go back after successful save
+            } else if (state is CardFailure) {
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(state.errorMessage)));
+            }
+          },
+
+          buildWhen: (previous, current) =>
+              current is! CardLoading ||
+              current is CardSuccess ||
+              current is CardFailure,
+          bloc: BlocProvider.of<AddCardCubit>(context),
+          builder: (context, state) {
+            if (state is CardLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else {
+              return ElevatedButton(
+                onPressed: _saveCard,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 5,
+                ),
+                child: const Text(
+                  'Save Card',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }
+          },
         ),
       ),
     );
@@ -316,15 +345,15 @@ class _AddNewCardState extends State<AddNewCard> {
 
   // Helper function for submission logic
   void _saveCard() {
-    if (_cardHolderController.text.isEmpty ||
-        _cardNumberController.text.replaceAll(' ', '').length != 19 ||
-        _expiryDateController.text.length != 5 ||
-        _cvvController.text.length != 3) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields correctly.')),
-      );
-      return;
-    }
+    // if (_cardHolderController.text.isEmpty ||
+    //     _cardNumberController.text.replaceAll(' ', '').length != 16 ||
+    //     _expiryDateController.text.length != 5 ||
+    //     _cvvController.text.length != 3) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Please fill all fields correctly.')),
+    //   );
+    //   return;
+    // }
     if (_formKey.currentState?.validate() ?? false) {
       // Logic to save the card details securely (API call)
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,4 +1,6 @@
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/models/Payment_cart_model.dart';
+
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
 import 'package:e_commerce_app/views/widgets/payment_method_card.dart';
@@ -9,6 +11,56 @@ import 'package:flutter_dash/flutter_dash.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
+
+  Widget _buildPaymentMethodItem(PaymentCardModel? chosenCard) {
+    if (chosenCard == null) {
+      return const Text(
+        'No payment method selected',
+        style: TextStyle(color: Colors.grey),
+      );
+    } else {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+           const Icon(Icons.credit_card, color: Colors.blue),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    chosenCard.holderName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '**** **** **** ${chosenCard.cardNumber.substring(chosenCard.cardNumber.length - 4)}',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+           const Icon(Icons.check_circle, color: Colors.green),
+          ],
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +102,7 @@ class CheckoutPage extends StatelessWidget {
                 child: Text('Something went wrong: ${state.message}'),
               );
             } else if (state is CheckoutLoadedState) {
+              final selectedPaymentCard = state.paymentCards;
               return SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.symmetric(
@@ -130,6 +183,7 @@ class CheckoutPage extends StatelessWidget {
 
                             // 3. Payment Method Section
                             _buildSectionHeader('Payment Method'),
+                            _buildPaymentMethodItem(selectedPaymentCard),
                             const SizedBox(height: 10),
                             const PaymentMethodCard(), // Reused Payment Method Card Widget
 
