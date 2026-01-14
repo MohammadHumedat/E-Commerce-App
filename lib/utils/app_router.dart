@@ -1,6 +1,7 @@
 // This class to be implemented for managing application routes.
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
 import 'package:e_commerce_app/views/pages/checkout_page.dart';
+import 'package:e_commerce_app/views/pages/add_new_card.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 import 'package:e_commerce_app/views/pages/product_details_page.dart';
@@ -26,6 +27,8 @@ class AppRouter {
             child: ProductDetailsPage(productId: productId),
           ),
         );
+      case '/payment_method':
+        return MaterialPageRoute(builder: (_) => const AddNewCard());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

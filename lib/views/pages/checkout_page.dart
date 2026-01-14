@@ -1,5 +1,7 @@
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
+import 'package:e_commerce_app/views/widgets/payment_method_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -129,7 +131,7 @@ class CheckoutPage extends StatelessWidget {
                             // 3. Payment Method Section
                             _buildSectionHeader('Payment Method'),
                             const SizedBox(height: 10),
-                            _buildPaymentCard(),
+                            const PaymentMethodCard(), // Reused Payment Method Card Widget
 
                             const SizedBox(height: 24),
 
@@ -222,13 +224,12 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildCartItem(dynamic item) {
-    // Replace 'dynamic' with your actual CartItem model type
+  Widget _buildCartItem(AddToCartModel item) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          // Image Placeholder (Modern Rounded Square)
+          // Product Image
           Container(
             width: 60,
             height: 60,
@@ -264,42 +265,6 @@ class CheckoutPage extends StatelessWidget {
           Text(
             '\$${item.totalPrice.toStringAsFixed(2)}',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPaymentCard() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.credit_card, color: Colors.blue),
-          const SizedBox(width: 16),
-          const Expanded(
-            child: Text(
-              '**** **** **** 4582',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-          ),
-          Radio(
-            value: true,
-            groupValue: true,
-            activeColor: Colors.blue,
-            onChanged: (val) {},
           ),
         ],
       ),
