@@ -3,8 +3,10 @@ import 'package:e_commerce_app/models/Payment_cart_model.dart';
 
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
+import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
 import 'package:e_commerce_app/views/widgets/payment_card_item.dart';
 import 'package:e_commerce_app/views/widgets/payment_method_card.dart';
+import 'package:e_commerce_app/views/widgets/show_model_buttom_sheet_items.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,7 +15,10 @@ import 'package:flutter_dash/flutter_dash.dart';
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
 
-  Widget _buildPaymentMethodItem(PaymentCardModel? chosenCard) {
+  Widget _buildPaymentMethodItem(
+    PaymentCardModel? chosenCard,
+    BuildContext context,
+  ) {
     // Updated,view and Add Payments cards.
     if (chosenCard == null) {
       return const Text(
@@ -23,159 +28,155 @@ class CheckoutPage extends StatelessWidget {
     } else {
       return PaymentCardItem(
         chosenCard: chosenCard,
-        onTap: () {},
+        onTap: () {
+          showModalBottomSheet(
+            context: context,
+            builder: (bottomSheetContext) {
+              return BlocProvider.value(
+                value: context.read<AddCardCubit>(),
+                child: const ShowModelButtomSheetItems(),
+              );
+            },
+          );
+        },
       ); // Reused PaymentCardItem widget
+     
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final cubit = CheckoutCubit();
-        cubit.loadCheckoutData();
-        return cubit;
-      },
-      child: Scaffold(
-        backgroundColor: Colors.grey[50],
-        appBar: AppBar(
-          centerTitle: true,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text(
-            'Checkout',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-              fontSize: 20,
-            ),
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        iconTheme: const IconThemeData(color: Colors.black),
+        title: const Text(
+          'Checkout',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontSize: 20,
           ),
         ),
+      ),
 
-        bottomNavigationBar:
-            _buildBottomActionBar(), // Extracted Bottom Action Bar
-        body: BlocBuilder<CheckoutCubit, CheckoutState>(
-          buildWhen: (previous, current) =>
-              current is CheckoutLoadedState ||
-              current is CheckoutLoadingState ||
-              current is CheckoutErrorState,
-          builder: (context, state) {
-            if (state is CheckoutLoadingState) {
-              return const Center(child: CircularProgressIndicator.adaptive());
-            } else if (state is CheckoutErrorState) {
-              return Center(
-                child: Text('Something went wrong: ${state.message}'),
-              );
-            } else if (state is CheckoutLoadedState) {
-              final selectedPaymentCard = state.paymentCards;
-              return SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 10,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children:
-                      [
-                            //  Delivery Address Section
-                            _buildSectionHeader('Delivery Address'),
-                            const SizedBox(height: 10),
-                            // Address Card
-                            _buildAddressCard(),
+      bottomNavigationBar:
+          _buildBottomActionBar(), // Extracted Bottom Action Bar
+      body: BlocBuilder<CheckoutCubit, CheckoutState>(
+        buildWhen: (previous, current) =>
+            current is CheckoutLoadedState ||
+            current is CheckoutLoadingState ||
+            current is CheckoutErrorState,
+        builder: (context, state) {
+          if (state is CheckoutLoadingState) {
+            return const Center(child: CircularProgressIndicator.adaptive());
+          } else if (state is CheckoutErrorState) {
+            return Center(
+              child: Text('Something went wrong: ${state.message}'),
+            );
+          } else if (state is CheckoutLoadedState) {
+            final selectedPaymentCard = state.paymentCards;
+            return SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children:
+                    [
+                          //  Delivery Address Section
+                          _buildSectionHeader('Delivery Address'),
+                          const SizedBox(height: 10),
+                          // Address Card
+                          _buildAddressCard(),
 
-                            const SizedBox(height: 24),
+                          const SizedBox(height: 24),
 
-                            // 2. Products List Section
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildSectionHeader('Order List'),
-                                Text(
-                                  '${state.numOfProduct} Items',
-                                  style: TextStyle(color: Colors.grey[600]),
+                          //  Products List Section
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _buildSectionHeader('Order List'),
+                              Text(
+                                '${state.numOfProduct} Items',
+                                style: TextStyle(color: Colors.grey[600]),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 5),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.05),
-                                    blurRadius: 10,
-                                    offset: const Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: Column(
-                                children: List.generate(
-                                  state.cartItems.length,
-                                  (index) {
-                                    final item = state.cartItems[index];
-                                    final isLast =
-                                        index == state.cartItems.length - 1;
-                                    return Column(
-                                      children: [
-                                        _buildCartItem(item),
-                                        if (!isLast)
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                            ),
-                                            child: Dash(
-                                              direction: Axis.horizontal,
-                                              length:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.width -
-                                                  72,
-                                              dashLength: 5,
-                                              dashColor: Colors.grey,
-                                            ),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
+                            child: Column(
+                              children: List.generate(state.cartItems.length, (
+                                index,
+                              ) {
+                                final item = state.cartItems[index];
+                                final isLast =
+                                    index == state.cartItems.length - 1;
+                                return Column(
+                                  children: [
+                                    _buildCartItem(item),
+                                    if (!isLast)
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        child: Dash(
+                                          direction: Axis.horizontal,
+                                          length:
+                                              MediaQuery.of(
+                                                context,
+                                              ).size.width -
+                                              72,
+                                          dashLength: 5,
+                                          dashColor: Colors.grey,
+                                        ),
+                                      ),
+                                  ],
+                                );
+                              }),
                             ),
-
-                            const SizedBox(height: 24),
-
-                            //  Payment Method Section
-                            _buildSectionHeader('Payment Method'),
-                            const SizedBox(height: 7),
-                            _buildPaymentMethodItem(selectedPaymentCard),
-                            const SizedBox(height: 10),
-                            const PaymentMethodCard(), // Reused Payment Method Card Widget
-
-                            const SizedBox(height: 24),
-
-                            // 4. Order Summary
-                            _buildSectionHeader('Order Summary'),
-                            const SizedBox(height: 10),
-                            _buildOrderSummary(state),
-
-                            const SizedBox(height: 100),
-                          ]
-                          .animate(interval: 50.ms)
-                          .fade(duration: 600.ms)
-                          .slideY(
-                            begin: 0.1,
-                            end: 0,
-                            curve: Curves.easeOutQuad,
                           ),
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
-        ),
+
+                          const SizedBox(height: 24),
+
+                          //  Payment Method Section
+                          _buildSectionHeader('Payment Method'),
+                          const SizedBox(height: 7),
+                          _buildPaymentMethodItem(selectedPaymentCard, context),
+                          const SizedBox(height: 10),
+                          const PaymentMethodCard(), // Reused Payment Method Card Widget
+
+                          const SizedBox(height: 24),
+
+                          // 4. Order Summary
+                          _buildSectionHeader('Order Summary'),
+                          const SizedBox(height: 10),
+                          _buildOrderSummary(state),
+
+                          const SizedBox(height: 100),
+                        ]
+                        .animate(interval: 50.ms)
+                        .fade(duration: 600.ms)
+                        .slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
