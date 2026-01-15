@@ -4,7 +4,7 @@ import 'package:e_commerce_app/view_model/payment_card/card_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart'; // Import for FilteringTextInputFormatter
-
+// This page allows users to add a new credit/debit card.
 class AddNewCard extends StatefulWidget {
   const AddNewCard({super.key});
 
@@ -224,7 +224,7 @@ class _AddNewCardState extends State<AddNewCard> {
                   // Custom formatter to add spaces after every 4 digits for UX
                   _CardNumberInputFormatter(),
                 ],
-                validator: (value) => value?.replaceAll(' ', '').length != 19
+                validator: (value) => value?.replaceAll(' ', '').length != 16
                     ? 'Card number must be 16 digits'
                     : null,
               ),

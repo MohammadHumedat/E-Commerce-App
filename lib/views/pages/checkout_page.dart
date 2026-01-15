@@ -3,6 +3,7 @@ import 'package:e_commerce_app/models/Payment_cart_model.dart';
 
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
+import 'package:e_commerce_app/views/widgets/payment_card_item.dart';
 import 'package:e_commerce_app/views/widgets/payment_method_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -13,52 +14,17 @@ class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key});
 
   Widget _buildPaymentMethodItem(PaymentCardModel? chosenCard) {
+    // Updated,view and Add Payments cards.
     if (chosenCard == null) {
       return const Text(
         'No payment method selected',
         style: TextStyle(color: Colors.grey),
       );
     } else {
-      return Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-           const Icon(Icons.credit_card, color: Colors.blue),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    chosenCard.holderName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    '**** **** **** ${chosenCard.cardNumber.substring(chosenCard.cardNumber.length - 4)}',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
-           const Icon(Icons.check_circle, color: Colors.green),
-          ],
-        ),
-      );
+      return PaymentCardItem(
+        chosenCard: chosenCard,
+        onTap: () {},
+      ); // Reused PaymentCardItem widget
     }
   }
 
@@ -113,7 +79,7 @@ class CheckoutPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:
                       [
-                            // 1. Delivery Address Section
+                            //  Delivery Address Section
                             _buildSectionHeader('Delivery Address'),
                             const SizedBox(height: 10),
                             // Address Card
@@ -181,8 +147,9 @@ class CheckoutPage extends StatelessWidget {
 
                             const SizedBox(height: 24),
 
-                            // 3. Payment Method Section
+                            //  Payment Method Section
                             _buildSectionHeader('Payment Method'),
+                            const SizedBox(height: 7),
                             _buildPaymentMethodItem(selectedPaymentCard),
                             const SizedBox(height: 10),
                             const PaymentMethodCard(), // Reused Payment Method Card Widget
