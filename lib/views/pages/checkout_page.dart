@@ -17,30 +17,15 @@ class CheckoutPage extends StatelessWidget {
 
   Widget _buildPaymentMethodItem(
     PaymentCardModel? chosenCard,
-    BuildContext context,
+    VoidCallback onChange,
   ) {
-    // Updated,view and Add Payments cards.
     if (chosenCard == null) {
       return const Text(
         'No payment method selected',
         style: TextStyle(color: Colors.grey),
       );
     } else {
-      return PaymentCardItem(
-        chosenCard: chosenCard,
-        onTap: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (bottomSheetContext) {
-              return BlocProvider.value(
-                value: context.read<AddCardCubit>(),
-                child: const ShowModelButtomSheetItems(),
-              );
-            },
-          );
-        },
-      ); // Reused PaymentCardItem widget
-     
+      return PaymentCardItem(chosenCard: chosenCard, onTap: onChange);
     }
   }
 
@@ -63,8 +48,9 @@ class CheckoutPage extends StatelessWidget {
         ),
       ),
 
-      bottomNavigationBar:
-          _buildBottomActionBar(), // Extracted Bottom Action Bar
+      bottomNavigationBar: _buildBottomActionBar(
+        context,
+      ), // Extracted Bottom Action Bar
       body: BlocBuilder<CheckoutCubit, CheckoutState>(
         buildWhen: (previous, current) =>
             current is CheckoutLoadedState ||
@@ -78,7 +64,7 @@ class CheckoutPage extends StatelessWidget {
               child: Text('Something went wrong: ${state.message}'),
             );
           } else if (state is CheckoutLoadedState) {
-            final selectedPaymentCard = state.paymentCards;
+            final selectedPaymentCard = state.selectedCard;
             return SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -156,7 +142,28 @@ class CheckoutPage extends StatelessWidget {
                           //  Payment Method Section
                           _buildSectionHeader('Payment Method'),
                           const SizedBox(height: 7),
-                          _buildPaymentMethodItem(selectedPaymentCard, context),
+
+                          _buildPaymentMethodItem(
+                            selectedPaymentCard,
+                            () async {
+                              final selectedCard =
+                                  await showModalBottomSheet<PaymentCardModel>(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    builder: (_) => BlocProvider.value(
+                                      value: context.read<AddCardCubit>(),
+                                      child: const ShowModelButtomSheetItems(),
+                                    ),
+                                  );
+
+                              if (selectedCard != null) {
+                                context.read<CheckoutCubit>().selectPaymentCard(
+                                  selectedCard,
+                                );
+                              }
+                            },
+                          ),
+
                           const SizedBox(height: 10),
                           const PaymentMethodCard(), // Reused Payment Method Card Widget
 
@@ -346,7 +353,7 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomActionBar() {
+  Widget _buildBottomActionBar(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -361,23 +368,94 @@ class CheckoutPage extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: ElevatedButton(
-          onPressed: () {
-            // here goes the payment confirmation logic, here i want to add logic to clear cart after payment
+        child: BlocBuilder<CheckoutCubit, CheckoutState>(
+          bloc: BlocProvider.of<CheckoutCubit>(context),
+          buildWhen: (previous, current) =>
+              current is CheckoutLoadedState ||
+              current is ConfirmPaymentLoading ||
+              current is ConfirmPaymentSuccess ||
+              current is ConfirmPaymentFailure,
+          builder: (context, state) {
+            if (state is ConfirmPaymentLoading) {
+              return ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    strokeWidth: 2,
+                  ),
+                ),
+              );
+            } else if (state is ConfirmPaymentFailure) {
+              return ElevatedButton(
+                onPressed: () {
+                  context.read<CheckoutCubit>().confirmPayment();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Retry Payment',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              );
+            } else if (state is ConfirmPaymentSuccess) {
+              return ElevatedButton(
+                onPressed: () {
+                  // Navigate to order confirmation or home page
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Payment Successful',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              );
+            } else {
+              return ElevatedButton(
+                onPressed: () {
+                  context.read<CheckoutCubit>().confirmPayment();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryColor,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: const Text(
+                  'Confirm Payment',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              );
+            }
           },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
-          child: const Text(
-            'Confirm Payment',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
         ),
       ),
     );

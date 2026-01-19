@@ -65,7 +65,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
               ),
             );
           } else if (state is CardLoaded) {
-            if (state.cards.isEmpty) {
+            if (state.cards.isEmpty) { // Check for empty card list
               return SizedBox(
                 height: 200,
                 child: Center(
@@ -107,7 +107,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Container(
+                      Container( // Method count badge
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 6,
@@ -132,7 +132,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
                 const SizedBox(height: 8),
                 ConstrainedBox(
                   constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.height * 0.5,
+                    maxHeight: MediaQuery.of(context).size.height * 0.5,// Limit height to half the screen
                   ),
                   child: ListView.separated(
                     shrinkWrap: true,
@@ -154,7 +154,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
                           return await showDialog(
                             context: context,
                             builder: (BuildContext context) {
-                              return AlertDialog(
+                              return AlertDialog( // Confirmation dialog
                                 title: const Text('Remove Payment Method'),
                                 content: Text(
                                   'Are you sure you want to remove this ${card.paymentType.displayName} payment method?',
@@ -265,6 +265,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
                             color: Colors.green,
                           ),
                           onTap: () {
+                            
                             Navigator.pop(context, card);
                           },
                         ),
@@ -275,7 +276,7 @@ class _ShowModelButtomSheetItemsState extends State<ShowModelButtomSheetItems> {
               ],
             );
           }
-          return const SizedBox.shrink();
+          return const SizedBox.shrink(); // Fallback for unexpected states
         },
       ),
     );

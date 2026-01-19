@@ -6,33 +6,51 @@ import 'package:e_commerce_app/models/add_to_cart_model.dart';
 part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
+  PaymentCardModel? selectedCard;
   CheckoutCubit() : super(CheckoutCubitInitial());
   void loadCheckoutData() {
     emit(CheckoutLoadingState());
     try {
-      // Simulate data processing
       final cartItems = addToCartItems;
+
       final subTotal = cartItems.fold<double>(
         0.0,
         (sum, item) => sum + item.product.price * item.quantity,
       );
+
       final numOfProduct = cartItems.fold<int>(
         0,
         (previous, element) => previous + element.quantity,
       );
-      final chosenPaymentCard = dummyPaymentCardList.isNotEmpty
+
+      final defaultCard = dummyPaymentCardList.isNotEmpty
           ? dummyPaymentCardList.first
           : null;
+
       emit(
         CheckoutLoadedState(
           cartItems: cartItems,
           totalPrice: subTotal + 10,
           numOfProduct: numOfProduct,
-          paymentCards: chosenPaymentCard,
+          selectedCard: defaultCard,
         ),
       );
     } catch (e) {
       emit(CheckoutErrorState(e.toString()));
     }
+  }
+
+  void selectPaymentCard(PaymentCardModel card) {
+    if (state is CheckoutLoadedState) {
+      final currentState = state as CheckoutLoadedState;
+      emit(currentState.copyWith(selectedCard: card));
+    }
+  }
+
+  void confirmPayment() async {
+    emit(ConfirmPaymentLoading());
+    await Future.delayed(const Duration(seconds: 2));
+    final isSuccess = true; // Simulate payment success or failure
+    emit(ConfirmPaymentSuccess());
   }
 }
