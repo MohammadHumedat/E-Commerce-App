@@ -6,8 +6,8 @@ import 'package:e_commerce_app/models/add_to_cart_model.dart';
 part 'checkout_state.dart';
 
 class CheckoutCubit extends Cubit<CheckoutState> {
-  PaymentCardModel? selectedCard;
   CheckoutCubit() : super(CheckoutCubitInitial());
+  PaymentCardModel? selectedCard;
   void loadCheckoutData() {
     emit(CheckoutLoadingState());
     try {
@@ -50,7 +50,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   void confirmPayment() async {
     emit(ConfirmPaymentLoading());
     await Future.delayed(const Duration(seconds: 2));
-// Simulate payment success or failure
+    // Simulate payment success or failure
     emit(ConfirmPaymentSuccess());
   }
 }

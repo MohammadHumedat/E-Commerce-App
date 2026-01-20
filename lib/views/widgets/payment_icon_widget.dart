@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 
 /// Reusable widget for displaying payment type icons from network
 class PaymentIconWidget extends StatelessWidget {
-  final PaymentType paymentType;
-  final double size;
-  final Color? color;
 
   const PaymentIconWidget({
     super.key,
@@ -13,6 +10,9 @@ class PaymentIconWidget extends StatelessWidget {
     this.size = 32,
     this.color,
   });
+  final PaymentType paymentType;
+  final double size;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {

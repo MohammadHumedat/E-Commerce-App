@@ -1,6 +1,7 @@
 // This class to be implemented for managing application routes.
 
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
+import 'package:e_commerce_app/view_model/location_cubit/location_cubit.dart';
 import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
 import 'package:e_commerce_app/views/pages/checkout_page.dart';
@@ -54,7 +55,16 @@ class AppRouter {
         );
 
       case '/chosen_location':
-        return MaterialPageRoute(builder: (_) => const ChosenAddress());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) {
+              final cubit = LocationCubit();
+              cubit.fetchLocations();
+              return cubit;
+            },
+            child: const ChosenAddress(),
+          ),
+        );
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

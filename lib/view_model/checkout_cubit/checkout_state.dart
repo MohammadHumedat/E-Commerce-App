@@ -7,10 +7,6 @@ final class CheckoutCubitInitial extends CheckoutState {}
 final class CheckoutLoadingState extends CheckoutState {}
 
 class CheckoutLoadedState extends CheckoutState {
-  final List<AddToCartModel> cartItems;
-  final double totalPrice;
-  final int numOfProduct;
-  final PaymentCardModel? selectedCard;
 
   CheckoutLoadedState({
     required this.cartItems,
@@ -18,6 +14,10 @@ class CheckoutLoadedState extends CheckoutState {
     required this.numOfProduct,
     required this.selectedCard,
   });
+  final List<AddToCartModel> cartItems;
+  final double totalPrice;
+  final int numOfProduct;
+  final PaymentCardModel? selectedCard;
 
   CheckoutLoadedState copyWith({
     List<AddToCartModel>? cartItems,

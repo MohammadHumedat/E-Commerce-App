@@ -30,4 +30,10 @@ List<LocationItemModel> dummyLocationItems = [
     country: 'russia',
     imgURL: 'https://cdn-icons-png.flaticon.com/512/1865/1865269.png',
   ),
+  LocationItemModel(
+    id: '4',
+    city: 'CA',
+    country: 'USA',
+    imgURL: 'https://cdn-icons-png.flaticon.com/512/1865/1865269.png',
+  ),
 ];

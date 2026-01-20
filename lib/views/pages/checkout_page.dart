@@ -53,6 +53,7 @@ class CheckoutPage extends StatelessWidget {
         context,
       ), // Extracted Bottom Action Bar
       body: BlocBuilder<CheckoutCubit, CheckoutState>(
+        
         buildWhen: (previous, current) =>
             current is CheckoutLoadedState ||
             current is CheckoutLoadingState ||
