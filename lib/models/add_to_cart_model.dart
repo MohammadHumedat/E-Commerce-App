@@ -1,4 +1,3 @@
-import 'dart:ui';
 
 import 'package:e_commerce_app/models/product_item.dart';
 

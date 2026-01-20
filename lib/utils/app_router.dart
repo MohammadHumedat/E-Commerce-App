@@ -5,6 +5,7 @@ import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
 import 'package:e_commerce_app/view_model/product_details/product_details_cubit.dart';
 import 'package:e_commerce_app/views/pages/checkout_page.dart';
 import 'package:e_commerce_app/views/pages/add_new_card.dart';
+import 'package:e_commerce_app/views/pages/chosen_address.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 import 'package:e_commerce_app/views/pages/product_details_page.dart';
@@ -51,6 +52,9 @@ class AppRouter {
             child: const AddNewCard(),
           ),
         );
+
+      case '/chosen_location':
+        return MaterialPageRoute(builder: (_) => const ChosenAddress());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

@@ -50,7 +50,7 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   void confirmPayment() async {
     emit(ConfirmPaymentLoading());
     await Future.delayed(const Duration(seconds: 2));
-    final isSuccess = true; // Simulate payment success or failure
+// Simulate payment success or failure
     emit(ConfirmPaymentSuccess());
   }
 }

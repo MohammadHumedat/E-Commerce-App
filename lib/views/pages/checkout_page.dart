@@ -1,4 +1,5 @@
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/models/Payment_cart_model.dart';
 
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
@@ -76,7 +77,7 @@ class CheckoutPage extends StatelessWidget {
                           _buildSectionHeader('Delivery Address'),
                           const SizedBox(height: 10),
                           // Address Card
-                          _buildAddressCard(),
+                          _buildAddressCard(context),
 
                           const SizedBox(height: 24),
 
@@ -201,7 +202,8 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard() {
+  Widget _buildAddressCard(BuildContext context) {
+    // Address Card Widget
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -218,6 +220,7 @@ class CheckoutPage extends StatelessWidget {
       child: Row(
         children: [
           Container(
+            // Location Icon
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.1),
@@ -227,6 +230,7 @@ class CheckoutPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Expanded(
+            //  Address Details
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -245,8 +249,12 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
           IconButton(
-            onPressed: () {},
+            // Edit Address Button
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRoutes.chosenLocation);
+            },
             icon: const Icon(Icons.edit_outlined, color: Colors.grey),
+            tooltip: 'Edit Address',
           ),
         ],
       ),
