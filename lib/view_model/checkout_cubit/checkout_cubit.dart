@@ -1,4 +1,5 @@
 import 'package:e_commerce_app/models/Payment_cart_model.dart';
+import 'package:e_commerce_app/models/location_item_model.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
@@ -27,12 +28,17 @@ class CheckoutCubit extends Cubit<CheckoutState> {
           ? dummyPaymentCardList.first
           : null;
 
+      final defaultAddress = dummyLocationItems.isNotEmpty
+          ? dummyLocationItems.first
+          : null;
+
       emit(
         CheckoutLoadedState(
           cartItems: cartItems,
           totalPrice: subTotal + 10,
           numOfProduct: numOfProduct,
           selectedCard: defaultCard,
+          selectedAddress: defaultAddress,
         ),
       );
     } catch (e) {
@@ -50,7 +56,14 @@ class CheckoutCubit extends Cubit<CheckoutState> {
   void confirmPayment() async {
     emit(ConfirmPaymentLoading());
     await Future.delayed(const Duration(seconds: 2));
-    // Simulate payment success or failure
+
     emit(ConfirmPaymentSuccess());
+  }
+
+  void selectAddress(LocationItemModel address) {
+    if (state is CheckoutLoadedState) {
+      final current = state as CheckoutLoadedState;
+      emit(current.copyWith(selectedAddress: address));
+    }
   }
 }

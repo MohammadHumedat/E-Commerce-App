@@ -13,23 +13,28 @@ class CheckoutLoadedState extends CheckoutState {
     required this.totalPrice,
     required this.numOfProduct,
     required this.selectedCard,
+    this.selectedAddress,
   });
   final List<AddToCartModel> cartItems;
   final double totalPrice;
   final int numOfProduct;
   final PaymentCardModel? selectedCard;
+  final LocationItemModel? selectedAddress; 
 
   CheckoutLoadedState copyWith({
+    LocationItemModel? selectedAddress,
     List<AddToCartModel>? cartItems,
     double? totalPrice,
     int? numOfProduct,
     PaymentCardModel? selectedCard,
   }) {
     return CheckoutLoadedState(
+
       cartItems: cartItems ?? this.cartItems,
       totalPrice: totalPrice ?? this.totalPrice,
       numOfProduct: numOfProduct ?? this.numOfProduct,
       selectedCard: selectedCard ?? this.selectedCard,
+      selectedAddress: selectedAddress ?? this.selectedAddress,
     );
   }
 }

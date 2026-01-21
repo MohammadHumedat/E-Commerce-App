@@ -3,6 +3,7 @@ import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/models/Payment_cart_model.dart';
 
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
+import 'package:e_commerce_app/models/location_item_model.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
 import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
 import 'package:e_commerce_app/views/widgets/payment_card_item.dart';
@@ -53,7 +54,6 @@ class CheckoutPage extends StatelessWidget {
         context,
       ), // Extracted Bottom Action Bar
       body: BlocBuilder<CheckoutCubit, CheckoutState>(
-        
         buildWhen: (previous, current) =>
             current is CheckoutLoadedState ||
             current is CheckoutLoadingState ||
@@ -78,7 +78,7 @@ class CheckoutPage extends StatelessWidget {
                           _buildSectionHeader('Delivery Address'),
                           const SizedBox(height: 10),
                           // Address Card
-                          _buildAddressCard(context),
+                          _buildAddressCard(context, state),
 
                           const SizedBox(height: 24),
 
@@ -203,8 +203,9 @@ class CheckoutPage extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressCard(BuildContext context) {
-    // Address Card Widget
+  Widget _buildAddressCard(BuildContext context, CheckoutLoadedState state) {
+    final selectedAddress = state.selectedAddress;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -221,7 +222,6 @@ class CheckoutPage extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            // Location Icon
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: Colors.blue.withOpacity(0.1),
@@ -231,17 +231,19 @@ class CheckoutPage extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           Expanded(
-            //  Address Details
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Home',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                Text(
+                  selectedAddress?.city ?? 'No Address',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '123 Main Street, New York, USA',
+                  selectedAddress?.country ?? 'Please select an address',
                   style: TextStyle(color: Colors.grey[600], fontSize: 14),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -250,9 +252,17 @@ class CheckoutPage extends StatelessWidget {
             ),
           ),
           IconButton(
-            // Edit Address Button
-            onPressed: () {
-              Navigator.of(context).pushNamed(AppRoutes.chosenLocation);
+            onPressed: () async {
+             
+              final selectedLocation = await Navigator.of(
+                context,
+              ).pushNamed(AppRoutes.chosenLocation);
+
+             
+              if (selectedLocation != null &&
+                  selectedLocation is LocationItemModel) {
+                context.read<CheckoutCubit>().selectAddress(selectedLocation);
+              }
             },
             icon: const Icon(Icons.edit_outlined, color: Colors.grey),
             tooltip: 'Edit Address',

@@ -69,7 +69,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
                       },
                     );
                   }
-                  return const Center(child: Text("No locations found."));
+                  return const Center(child: Text('No locations found.'));
                 },
               ),
             ),
@@ -185,6 +185,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
 
   Widget _buildConfirmButton() {
     return BlocBuilder<LocationCubit, LocationState>(
+      
       builder: (context, state) {
         bool active = state is LocationsFetched;
         return Padding(
