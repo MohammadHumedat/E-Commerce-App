@@ -1,3 +1,4 @@
+import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/utils/app_router.dart';
 
 import 'package:e_commerce_app/views/pages/main_scaffold.dart';
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const MainScaffold(),
+
+      initialRoute: AppRoutes.login,
     );
   }
 }

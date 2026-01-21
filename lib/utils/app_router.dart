@@ -7,6 +7,7 @@ import 'package:e_commerce_app/view_model/product_details/product_details_cubit.
 import 'package:e_commerce_app/views/pages/checkout_page.dart';
 import 'package:e_commerce_app/views/pages/add_new_card.dart';
 import 'package:e_commerce_app/views/pages/chosen_address.dart';
+import 'package:e_commerce_app/views/pages/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 import 'package:e_commerce_app/views/pages/product_details_page.dart';
@@ -17,6 +18,8 @@ class AppRouter {
     switch (settings.name) {
       case '/home':
         return MaterialPageRoute(builder: (_) => const CustomBottomNavBar());
+      case '/login':
+        return MaterialPageRoute(builder: (_) => const LoginPage());
 
       case '/checkout_page':
         return MaterialPageRoute(

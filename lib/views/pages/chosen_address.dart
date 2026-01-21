@@ -23,7 +23,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), // Slightly off-white for contrast
+      backgroundColor: const Color(0xFFF8F9FA), 
       appBar: AppBar(
         title: const Text('Select Address', 
           style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.black)),
@@ -77,13 +77,13 @@ class _ChosenAddressState extends State<ChosenAddress> {
         ),
       ),
       
-      // Fixed Floating Confirm Button
+     
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: _buildConfirmButton(),
+      floatingActionButton: _buildConfirmButton(), // Confirm Button
     );
   }
 
-  // --- UI COMPONENTS ---
+  // UI COMPONENTS 
 
   Widget _buildSearchBar() {
     return Container(
@@ -148,7 +148,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
           ),
           child: Row(
             children: [
-              // Icon with decorative background
+            
               Container(
                 height: 55, width: 55,
                 padding: const EdgeInsets.all(12),
@@ -194,7 +194,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              onPressed: active ? () {
+              onPressed: active ? () { // Confirm selected address and return to previous screen
                 final selected = state.locations.firstWhere((l) => l.id == state.selectedId);
                 Navigator.pop(context, selected);
               } : null,
@@ -214,7 +214,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
     );
   }
 
-  void _showFeedback(BuildContext context, String msg, Color color) {
+  void _showFeedback(BuildContext context, String msg, Color color) { // SnackBar for feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg, style: const TextStyle(fontWeight: FontWeight.w600)),

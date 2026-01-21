@@ -12,4 +12,6 @@ class AppColors {
   static Color? scaffoldBackgroundColor = Colors.grey[200];
 
   static Color? scaffoldBackground;
+
+  static Color? get facebookBlue => const Color(0xff1877F2);
 }
