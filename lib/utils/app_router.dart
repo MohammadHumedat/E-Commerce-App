@@ -8,6 +8,7 @@ import 'package:e_commerce_app/views/pages/checkout_page.dart';
 import 'package:e_commerce_app/views/pages/add_new_card.dart';
 import 'package:e_commerce_app/views/pages/chosen_address.dart';
 import 'package:e_commerce_app/views/pages/login_page.dart';
+import 'package:e_commerce_app/views/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import 'package:e_commerce_app/views/pages/custom_navbar_bottom.dart';
 import 'package:e_commerce_app/views/pages/product_details_page.dart';
@@ -21,6 +22,8 @@ class AppRouter {
       case '/login':
         return MaterialPageRoute(builder: (_) => const LoginPage());
 
+      case '/sign_up':
+        return MaterialPageRoute(builder: (_) => const SignupPage());
       case '/checkout_page':
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(

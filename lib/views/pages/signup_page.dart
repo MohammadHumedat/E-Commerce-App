@@ -1,24 +1,26 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
-import 'package:e_commerce_app/Constants/app_routes.dart';
-import 'package:e_commerce_app/views/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+enum FieldType { text, email, password }
+
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
-  final formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -29,19 +31,24 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: GestureDetector(
-        // To dismiss keyboard on tap outside
-        onTap: () =>
-            FocusScope.of(context).unfocus(), // Dismiss keyboard on tap
+        onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
-                // Header
+                // Back Button
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back),
+                ),
+
+                const SizedBox(height: 20),
+
+                //  Header
                 const Text(
-                  'Login Account',
+                  'Create Account',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
@@ -50,92 +57,82 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Welcome back! Please enter your details.',
+                  'Start your journey with us today.',
                   style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
                 ),
 
                 const SizedBox(height: 40),
 
-                Column(
-                  children: [
-                    // Form Start
-                    Form(
-                      key: formKey,
-
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Email Input
-                          const Text(
-                            'Email or Phone Number',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildTextField(
-                            controller: _emailController,
-                            hint: 'Enter your email',
-                            icon: Icons.email_outlined,
-                            inputType: TextInputType.emailAddress,
-                          ),
-
-                          const SizedBox(height: 20),
-
-                          // Password Input
-                          const Text(
-                            'Password',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          _buildTextField(
-                            controller: _passwordController,
-                            hint: 'Enter your password',
-                            icon: Icons.lock_outline_rounded,
-                            isPassword: true,
-                          ),
-                        ],
+                Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    children: [
+                      // Username Input
+                      const Text(
+                        'Username',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: _nameController,
+                        hint: 'Enter your username',
+                        icon: Icons.person_outline,
+                        fieldType: FieldType.text,
+                      ),
 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {},
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      foregroundColor: AppColors.primaryColor,
-                    ),
-                    child: const Text(
-                      'Forgot password?',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                      const SizedBox(height: 20),
+
+                      // Email Input
+                      const Text(
+                        'Email or Phone Number',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: _passwordController,
+                        hint: 'Enter your password',
+                        icon: Icons.lock_outline,
+                        fieldType: FieldType.password,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Password Input
+                      const Text(
+                        'Password',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildTextField(
+                        controller: _emailController,
+                        hint: 'Enter your email',
+                        icon: Icons.email_outlined,
+                        fieldType: FieldType.email,
+                        inputType: TextInputType.emailAddress,
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 40),
 
-                // Sign In Button
+                // Sign Up Button
                 SizedBox(
                   width: double.infinity,
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        // Perform login action
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.home,
-                          (route) => false,
-                        );
-                      }
+                      // Add Sign Up Logic Here
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primaryColor,
@@ -147,7 +144,7 @@ class _LoginPageState extends State<LoginPage> {
                       shadowColor: AppColors.primaryColor.withOpacity(0.4),
                     ),
                     child: const Text(
-                      'Sign In',
+                      'Sign Up',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -158,14 +155,14 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 30),
 
-                // Divider
+                //  Divider
                 Row(
                   children: [
                     Expanded(child: Divider(color: Colors.grey.shade300)),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'Or continue with',
+                        'Or sign up with',
                         style: TextStyle(
                           color: Colors.grey.shade500,
                           fontSize: 12,
@@ -178,7 +175,7 @@ class _LoginPageState extends State<LoginPage> {
 
                 const SizedBox(height: 30),
 
-                // Social Buttons
+                //  Social Buttons
                 _buildSocialButton(
                   'Google',
                   'https://cdn-icons-png.flaticon.com/128/300/300221.png',
@@ -188,27 +185,30 @@ class _LoginPageState extends State<LoginPage> {
                   'Facebook',
                   'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
                 ),
+
                 const SizedBox(height: 30),
+
+                // Login Link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      'Already have an account? ',
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 14,
                       ),
                     ),
-
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.signUp);
+                    GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        Navigator.pop(context);
                       },
                       child: Text(
-                        'Create Account',
+                        'Sign In',
                         style: TextStyle(
                           color: AppColors.primaryColor,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
                           fontSize: 14,
                         ),
                       ),
@@ -230,27 +230,24 @@ class _LoginPageState extends State<LoginPage> {
     required TextEditingController controller,
     required String hint,
     required IconData icon,
-    bool isPassword = false,
+    required FieldType fieldType,
     TextInputType inputType = TextInputType.text,
   }) {
     return TextFormField(
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'This field cannot be empty';
-        }
-        return null;
-      },
       controller: controller,
-      obscureText: isPassword ? !_isPasswordVisible : false,
+      obscureText: fieldType == FieldType.password
+          ? !_isPasswordVisible
+          : false,
       keyboardType: inputType,
       style: const TextStyle(fontWeight: FontWeight.w500),
+      validator: (value) => _validateField(value, fieldType),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
         filled: true,
         fillColor: const Color(0xFFF7F7F9),
         prefixIcon: Icon(icon, color: Colors.grey.shade500),
-        suffixIcon: isPassword
+        suffixIcon: fieldType == FieldType.password
             ? IconButton(
                 icon: Icon(
                   _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -277,6 +274,29 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  String? _validateField(String? value, FieldType type) {
+    final text = value?.trim() ?? '';
+
+    if (text.isEmpty) return 'This field cannot be empty';
+
+    switch (type) {
+      case FieldType.email:
+        if (!text.contains('@')) return 'Enter a valid email';
+        break;
+
+      case FieldType.password:
+        if (text.length < 6) {
+          return 'Password must be at least 6 characters';
+        }
+        break;
+
+      case FieldType.text:
+        break;
+    }
+
+    return null;
   }
 
   Widget _buildSocialButton(String method, String iconUrl) {
@@ -311,7 +331,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(width: 12),
               Text(
-                'Sign in with $method',
+                'Sign up with $method',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 15,
@@ -324,4 +344,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-} // TODO: make the create account, Form and validator
+}
