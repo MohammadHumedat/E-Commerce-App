@@ -6,7 +6,7 @@ class AppColors {
   static const Color grey2 = Colors.grey;
   static final Color grey3 = Colors.grey.shade200;
   static const Color black = Colors.black;
-  static final Color primaryColor = Colors.deepPurple;
+  static final Color primaryColor = const Color(0xFF673AB7);
   static Color? white = Colors.grey[70];
 
   static Color? scaffoldBackgroundColor = Colors.grey[200];
