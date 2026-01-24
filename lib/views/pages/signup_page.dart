@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/view_model/auth_cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum FieldType { text, email, password }
 
@@ -28,6 +30,7 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = context.read<AuthCubit>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: GestureDetector(
@@ -96,10 +99,11 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       const SizedBox(height: 8),
                       _buildTextField(
-                        controller: _passwordController,
-                        hint: 'Enter your password',
-                        icon: Icons.lock_outline,
-                        fieldType: FieldType.password,
+                        controller: _emailController,
+                        hint: 'Enter your Email',
+                        icon: Icons.email_outlined,
+                        fieldType: FieldType.email,
+                        inputType: TextInputType.emailAddress,
                       ),
 
                       const SizedBox(height: 20),
@@ -114,11 +118,11 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                       const SizedBox(height: 8),
                       _buildTextField(
-                        controller: _emailController,
-                        hint: 'Enter your email',
-                        icon: Icons.email_outlined,
-                        fieldType: FieldType.email,
-                        inputType: TextInputType.emailAddress,
+                        controller: _passwordController,
+                        hint: 'Enter your Password',
+                        icon: Icons.lock_outline,
+                        fieldType: FieldType.password,
+                        inputType: TextInputType.visiblePassword,
                       ),
                     ],
                   ),
@@ -130,26 +134,49 @@ class _SignupPageState extends State<SignupPage> {
                 SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Add Sign Up Logic Here
+                  child: BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listener: (context, state) {
+                      if (state is AuthAuthenticated) {
+                        Navigator.pop(context);
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                      }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 5,
-                      shadowColor: AppColors.primaryColor.withOpacity(0.4),
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                      return ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            await cubit.registerWithEmailAndPassword(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
+                            );
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryColor,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 5,
+                          shadowColor: AppColors.primaryColor.withOpacity(0.4),
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
 

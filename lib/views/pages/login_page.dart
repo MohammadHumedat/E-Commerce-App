@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:e_commerce_app/Constants/app_colors.dart';
 import 'package:e_commerce_app/Constants/app_routes.dart';
-import 'package:e_commerce_app/views/pages/signup_page.dart';
+import 'package:e_commerce_app/view_model/auth_cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<AuthCubit>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: GestureDetector(
@@ -126,33 +128,59 @@ class _LoginPageState extends State<LoginPage> {
                 SizedBox(
                   width: double.infinity,
                   height: 56,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (formKey.currentState!.validate()) {
-                        // Perform login action
+                  child: BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listener: (context, state) {
+                      // Listen for state changes
+                      if (state is AuthAuthenticated) {
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           AppRoutes.home,
-                          (route) => false,
+                          (route) => false, // Remove all previous routes
+                        );
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                      }
+                    },
+                    buildWhen: (previous, current) {
+                      return current is! AuthAuthenticated;
+                    },
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else {
+                        return ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              await cubit.loginWithEmailAndPassword(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 5,
+                            shadowColor: AppColors.primaryColor.withOpacity(
+                              0.4,
+                            ),
+                          ),
+                          child: const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         );
                       }
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 5,
-                      shadowColor: AppColors.primaryColor.withOpacity(0.4),
-                    ),
-                    child: const Text(
-                      'Sign In',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                   ),
                 ),
 

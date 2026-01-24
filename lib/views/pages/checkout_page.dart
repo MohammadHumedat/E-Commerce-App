@@ -369,13 +369,16 @@ class CheckoutPage extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () async {
-                        final selectedLocation = await Navigator.of( // wait for selected location from location selection page 
+                        final selectedLocation = await Navigator.of(
+                          // wait for selected location from location selection page
                           context,
                         ).pushNamed(AppRoutes.chosenLocation);
 
-                        if (selectedLocation != null && 
+                        if (selectedLocation != null &&
                             selectedLocation is LocationItemModel) {
-                          context.read<CheckoutCubit>().selectAddress( // update selected address in checkout cubit
+                          // ignore: use_build_context_synchronously
+                          context.read<CheckoutCubit>().selectAddress(
+                            // update selected address in checkout cubit
                             selectedLocation,
                           );
                         }

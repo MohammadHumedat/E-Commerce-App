@@ -1,5 +1,6 @@
 // This class to be implemented for managing application routes.
 
+import 'package:e_commerce_app/view_model/auth_cubit/auth_cubit.dart';
 import 'package:e_commerce_app/view_model/checkout_cubit/checkout_cubit.dart';
 import 'package:e_commerce_app/view_model/location_cubit/location_cubit.dart';
 import 'package:e_commerce_app/view_model/payment_card/card_cubit.dart';
@@ -20,10 +21,20 @@ class AppRouter {
       case '/home':
         return MaterialPageRoute(builder: (_) => const CustomBottomNavBar());
       case '/login':
-        return MaterialPageRoute(builder: (_) => const LoginPage());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => AuthCubit(),
+            child: const LoginPage(),
+          ),
+        );
 
       case '/sign_up':
-        return MaterialPageRoute(builder: (_) => const SignupPage());
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => AuthCubit(),
+            child: const SignupPage(),
+          ),
+        );
       case '/checkout_page':
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(
