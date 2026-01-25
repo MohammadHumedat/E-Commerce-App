@@ -23,10 +23,16 @@ class _ChosenAddressState extends State<ChosenAddress> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA), 
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Select Address', 
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.black)),
+        title: const Text(
+          'Select Address',
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            color: Colors.black,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -47,7 +53,9 @@ class _ChosenAddressState extends State<ChosenAddress> {
               padding: const EdgeInsets.all(20),
               decoration: const BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.vertical(bottom: Radius.circular(30)),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(30),
+                ),
               ),
               child: _buildSearchBar(),
             ),
@@ -76,20 +84,23 @@ class _ChosenAddressState extends State<ChosenAddress> {
           ],
         ),
       ),
-      
-     
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: _buildConfirmButton(), // Confirm Button
     );
   }
 
-  // UI COMPONENTS 
+  // UI COMPONENTS
 
   Widget _buildSearchBar() {
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 10))
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
         ],
       ),
       child: TextField(
@@ -99,7 +110,10 @@ class _ChosenAddressState extends State<ChosenAddress> {
           fillColor: const Color(0xFFF1F3F5),
           hintText: 'Enter City - Country...',
           hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 15),
-          prefixIcon: Icon(Icons.location_searching_rounded, color: AppColors.primaryColor),
+          prefixIcon: Icon(
+            Icons.location_searching_rounded,
+            color: AppColors.primaryColor,
+          ),
           suffixIcon: Container(
             margin: const EdgeInsets.all(6),
             decoration: BoxDecoration(
@@ -109,12 +123,17 @@ class _ChosenAddressState extends State<ChosenAddress> {
             child: IconButton(
               icon: const Icon(Icons.add, color: Colors.white),
               onPressed: () {
-                context.read<LocationCubit>().addLocation(searchController.text);
+                context.read<LocationCubit>().addLocation(
+                  searchController.text,
+                );
                 searchController.clear();
               },
             ),
           ),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(18), borderSide: BorderSide.none),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(18),
+            borderSide: BorderSide.none,
+          ),
         ),
       ),
     );
@@ -138,25 +157,37 @@ class _ChosenAddressState extends State<ChosenAddress> {
             ),
             boxShadow: [
               BoxShadow(
-                color: isSelected 
-                  ? AppColors.primaryColor.withOpacity(0.15) 
-                  : Colors.black.withOpacity(0.03),
+                color: isSelected
+                    ? AppColors.primaryColor.withOpacity(0.15)
+                    : Colors.black.withOpacity(0.03),
                 blurRadius: 15,
                 offset: const Offset(0, 8),
-              )
+              ),
             ],
           ),
           child: Row(
             children: [
-            
               Container(
-                height: 55, width: 55,
+                height: 55,
+                width: 55,
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primaryColor.withOpacity(0.1) : Colors.grey.shade100,
+                  color: isSelected
+                      ? AppColors.primaryColor.withOpacity(0.1)
+                      : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: CachedNetworkImage(imageUrl: loc.imgURL!, fit: BoxFit.contain),
+                child: CachedNetworkImage(
+                  imageUrl: loc.imgURL!,
+                  fit: BoxFit.contain,
+                  memCacheHeight: 100,
+                  memCacheWidth: 100,
+                  maxHeightDiskCache: 200,
+                  maxWidthDiskCache: 200,
+                  placeholder: (context, url) => const Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ),
               ),
               const SizedBox(width: 16),
               // Text Content
@@ -164,16 +195,33 @@ class _ChosenAddressState extends State<ChosenAddress> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(loc.city, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: Color(0xFF2D3436))),
+                    Text(
+                      loc.city,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 17,
+                        color: Color(0xFF2D3436),
+                      ),
+                    ),
                     const SizedBox(height: 4),
-                    Text(loc.country, style: TextStyle(color: Colors.grey.shade500, fontWeight: FontWeight.w500)),
+                    Text(
+                      loc.country,
+                      style: TextStyle(
+                        color: Colors.grey.shade500,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
               ),
               // Selection Indicator
               Icon(
-                isSelected ? Icons.check_circle_rounded : Icons.radio_button_off_rounded,
-                color: isSelected ? AppColors.primaryColor : Colors.grey.shade300,
+                isSelected
+                    ? Icons.check_circle_rounded
+                    : Icons.radio_button_off_rounded,
+                color: isSelected
+                    ? AppColors.primaryColor
+                    : Colors.grey.shade300,
                 size: 28,
               ),
             ],
@@ -185,7 +233,6 @@ class _ChosenAddressState extends State<ChosenAddress> {
 
   Widget _buildConfirmButton() {
     return BlocBuilder<LocationCubit, LocationState>(
-      
       builder: (context, state) {
         bool active = state is LocationsFetched;
         return Padding(
@@ -194,19 +241,32 @@ class _ChosenAddressState extends State<ChosenAddress> {
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              onPressed: active ? () { // Confirm selected address and return to previous screen
-                final selected = state.locations.firstWhere((l) => l.id == state.selectedId);
-                Navigator.pop(context, selected);
-              } : null,
+              onPressed: active
+                  ? () {
+                      // Confirm selected address and return to previous screen
+                      final selected = state.locations.firstWhere(
+                        (l) => l.id == state.selectedId,
+                      );
+                      Navigator.pop(context, selected);
+                    }
+                  : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryColor,
                 foregroundColor: Colors.white,
                 elevation: 10,
                 shadowColor: AppColors.primaryColor.withOpacity(0.5),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
               ),
-              child: const Text('Use This Address', 
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
+              child: const Text(
+                'Use This Address',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
             ),
           ),
         );
@@ -214,7 +274,8 @@ class _ChosenAddressState extends State<ChosenAddress> {
     );
   }
 
-  void _showFeedback(BuildContext context, String msg, Color color) { // SnackBar for feedback
+  void _showFeedback(BuildContext context, String msg, Color color) {
+    // SnackBar for feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg, style: const TextStyle(fontWeight: FontWeight.w600)),

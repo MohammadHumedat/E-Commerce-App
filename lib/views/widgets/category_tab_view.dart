@@ -44,6 +44,10 @@ class CategoryTabView extends StatelessWidget {
                     width: 100,
                     height: 100,
                     fit: BoxFit.cover,
+                    memCacheHeight: 100,
+                    memCacheWidth: 100,
+                    placeholder: (context, url) =>
+                        const SizedBox(width: 100, height: 100),
                   ),
                 ),
 

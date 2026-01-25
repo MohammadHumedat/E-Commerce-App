@@ -95,6 +95,7 @@ class _MainScaffoldState extends State<MainScaffold> {
                   child: CircleAvatar(
                     radius: 22,
                     backgroundImage: CachedNetworkImageProvider(
+                      
                       'https://media.istockphoto.com/id/1457536828/photo/japanese-young-man-enjoy-traveling-alone.webp?a=1&s=612x612&w=0&k=20&c=S4hwiclbLQV2aMlztJVdjUuXEAMhYuuw2ifKERrAw44=',
                     ),
                   ),

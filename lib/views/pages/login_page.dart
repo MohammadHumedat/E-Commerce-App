@@ -334,6 +334,9 @@ class _LoginPageState extends State<LoginPage> {
                 imageUrl: iconUrl,
                 width: 24,
                 height: 24,
+                memCacheHeight: 24,
+                memCacheWidth: 24,
+                
                 placeholder: (context, url) =>
                     const SizedBox(width: 24, height: 24),
               ),

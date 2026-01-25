@@ -44,6 +44,9 @@ class HomeTabView extends StatelessWidget {
                             CachedNetworkImage(
                               imageUrl: state.dummyCarousel[index].imageUrl,
                               fit: BoxFit.fill,
+                              memCacheHeight: 150,
+                              memCacheWidth: 300,
+
                               placeholder: (context, url) => const Center(
                                 child: CircularProgressIndicator(
                                   strokeWidth: 2,
