@@ -22,11 +22,8 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const CustomBottomNavBar());
       case '/login':
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => AuthCubit(),
-            child: const LoginPage(),
-          ),
-        );
+          builder: (_) => const LoginPage(),
+        ); 
 
       case '/sign_up':
         return MaterialPageRoute(

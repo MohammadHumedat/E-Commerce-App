@@ -3,6 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 abstract class AuthService {
   Future<bool> loginWithEmailAndPassword(String email, String password);
   Future<bool> registerWithEmailAndPassword(String email, String password);
+  User? get currentUser => FirebaseAuth.instance.currentUser;
+
+  Future<void> logout();
 }
 
 class AuthServiceImpl implements AuthService {
@@ -36,5 +39,13 @@ class AuthServiceImpl implements AuthService {
     } else {
       return true;
     }
+  }
+
+  @override
+  User? get currentUser => _firebaseAuth.currentUser;
+
+  @override
+  Future<void> logout() async {
+    await _firebaseAuth.signOut();
   }
 }
