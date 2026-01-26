@@ -7,11 +7,12 @@ part 'auth_state.dart';
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthInitial()) {
     FirebaseAuth.instance.authStateChanges().listen((user) {
-      // Listen to auth state changes
       if (user != null) {
         emit(AuthAuthenticated());
       } else {
-        emit(AuthUnauthenticated());
+        if (state is! AuthLoading) {
+          emit(AuthUnauthenticated());
+        }
       }
     });
   }
@@ -65,7 +66,27 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> logout() async {
     emit(AuthLoading());
-    await _authService.logout();
-    emit(AuthUnauthenticated());
+    try {
+      await _authService.logout();
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError('Logout failed: ${e.toString()}'));
+    }
+  }
+
+  Future<void> authenticateWithGoogle() async {
+    emit(GoogleAuthenticating());
+    try {
+      final result = await _authService.authenticateWithGoogle();
+      if (result) {
+        emit(GoogleAuthenticated());
+        emit(AuthAuthenticated());
+      } else {
+        emit(GoogleAuthenticationFailed('Google authentication failed'));
+        emit(AuthUnauthenticated());
+      }
+    } catch (e) {
+      emit(GoogleAuthenticationFailed('Google authentication failed: ${e.toString()}'));
+    }
   }
 }

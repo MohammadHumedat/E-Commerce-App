@@ -91,9 +91,9 @@ class ProfilePage extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 55,
                           backgroundImage: const CachedNetworkImageProvider(
+                            'https://media.istockphoto.com/id/1457536828/photo/japanese-young-man-enjoy-traveling-alone.webp?a=1&s=612x612&w=0&k=20&c=S4hwiclbLQV2aMlztJVdjUuXEAMhYuuw2ifKERrAw44=',
                             maxHeight: 200,
                             maxWidth: 200,
-                            'https://media.istockphoto.com/id/1457536828/photo/japanese-young-man-enjoy-traveling-alone.webp?a=1&s=612x612&w=0&k=20&c=S4hwiclbLQV2aMlztJVdjUuXEAMhYuuw2ifKERrAw44=',
                           ),
                           child: Container(
                             decoration: BoxDecoration(
@@ -125,6 +125,7 @@ class ProfilePage extends StatelessWidget {
               ),
 
               const SizedBox(height: 70),
+
               // User Info
               const Text(
                 'Mohammad Hmedat',
@@ -227,50 +228,68 @@ class ProfilePage extends StatelessWidget {
 
               const SizedBox(height: 20),
 
-              // Logout Button
-              BlocBuilder<AuthCubit, AuthState>(
-                builder: (context, state) {
-                  final isLoading = state is AuthLoading;
-
-                  return SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: isLoading
-                          ? null
-                          : () => _showLogoutDialog(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.red.shade600,
-                        elevation: 0,
-                        side: BorderSide(
-                          color: Colors.red.shade200,
-                          width: 1.5,
-                        ),
+              // Logout Button with BlocListener for errors
+              BlocListener<AuthCubit, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(state.message),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      icon: isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation(Colors.red),
-                              ),
-                            )
-                          : const Icon(Icons.logout_rounded, size: 22),
-                      label: Text(
-                        isLoading ? 'Logging out...' : 'Logout',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  );
+                    );
+                  }
                 },
+                child: BlocBuilder<AuthCubit, AuthState>(
+                  builder: (context, state) {
+                    final isLoading = state is AuthLoading;
+
+                    return SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: isLoading
+                            ? null
+                            : () => _showLogoutDialog(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          foregroundColor: Colors.red.shade600,
+                          elevation: 0,
+                          side: BorderSide(
+                            color: Colors.red.shade200,
+                            width: 1.5,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: isLoading
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation(
+                                    Colors.red,
+                                  ),
+                                ),
+                              )
+                            : const Icon(Icons.logout_rounded, size: 22),
+                        label: Text(
+                          isLoading ? 'Logging out...' : 'Logout',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
 
               const SizedBox(height: 30),
@@ -328,7 +347,6 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget _buildMenuItem({
-    // Menu Item Widget
     required IconData icon,
     required String title,
     required String subtitle,

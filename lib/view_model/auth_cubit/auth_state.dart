@@ -16,3 +16,10 @@ final class AuthError extends AuthState {
   AuthError(this.message);
   final String message;
 }
+
+final class GoogleAuthenticating extends AuthState {}
+final class GoogleAuthenticated extends AuthState {}
+final class GoogleAuthenticationFailed extends AuthState {
+  GoogleAuthenticationFailed(this.message);
+  final String message;
+}

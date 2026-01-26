@@ -14,7 +14,7 @@ class AuthGate extends StatelessWidget {
         FlutterNativeSplash.remove();
 
         if (state is AuthAuthenticated) {
-          Navigator.pushReplacementNamed(context, AppRoutes.home);
+          Navigator.pushReplacementNamed(context, AppRoutes.home,);
         } else if (state is AuthUnauthenticated) {
           Navigator.pushReplacementNamed(context, AppRoutes.login);
         }
