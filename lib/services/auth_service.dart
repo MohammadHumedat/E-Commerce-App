@@ -56,7 +56,7 @@ class AuthServiceImpl implements AuthService {
   Future<bool> authenticateWithGoogle() async {
     try {
       await GoogleSignIn.instance.initialize(); // Ensure initialization
-      await GoogleSignIn.instance.signOut(); // Sign out any existing sessions
+      await GoogleSignIn.instance.signOut();
       final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
           .authenticate(); // Trigger the authentication flow
 
@@ -67,6 +67,7 @@ class AuthServiceImpl implements AuthService {
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         // Create a new credential
+        accessToken: googleAuth.idToken,
         idToken: googleAuth.idToken,
       );
 

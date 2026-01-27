@@ -22,6 +22,7 @@ dependencies:
   flutter_dash: ^1.0.0
   flutter_native_splash: ^2.4.7
   persistent_bottom_nav_bar_v2: ^6.1.0
+  cloud_firestore: ^6.1.2
 
 dev_dependencies:
   flutter_lints: ^5.0.0

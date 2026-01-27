@@ -1,88 +1,393 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:e_commerce_app/Constants/app_colors.dart';
+import 'package:e_commerce_app/Constants/app_routes.dart';
+import 'package:e_commerce_app/view_model/auth_cubit/auth_cubit.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-abstract class AuthService {
-  Future<bool> loginWithEmailAndPassword(String email, String password);
-  Future<bool> registerWithEmailAndPassword(String email, String password);
-  User? get currentUser => FirebaseAuth.instance.currentUser;
-  Future<bool> authenticateWithGoogle();
-  Future<void> logout();
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class AuthServiceImpl implements AuthService {
-  final _firebaseAuth = FirebaseAuth.instance;
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  final formKey = GlobalKey<FormState>();
+
   @override
-  Future<bool> loginWithEmailAndPassword(String email, String password) async {
-    final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password,
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = BlocProvider.of<AuthCubit>(context);
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: GestureDetector(
+        // To dismiss keyboard on tap outside
+        onTap: () =>
+            FocusScope.of(context).unfocus(), // Dismiss keyboard on tap
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                // Header
+                const Text(
+                  'Login Account',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Welcome back! Please enter your details.',
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade500),
+                ),
+
+                const SizedBox(height: 40),
+
+                Column(
+                  children: [
+                    // Form Start
+                    Form(
+                      key: formKey,
+
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Email Input
+                          const Text(
+                            'Email or Phone Number',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildTextField(
+                            controller: _emailController,
+                            hint: 'Enter your email',
+                            icon: Icons.email_outlined,
+                            inputType: TextInputType.emailAddress,
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Password Input
+                          const Text(
+                            'Password',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildTextField(
+                            controller: _passwordController,
+                            hint: 'Enter your password',
+                            icon: Icons.lock_outline_rounded,
+                            isPassword: true,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Forgot Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      foregroundColor: AppColors.primaryColor,
+                    ),
+                    child: const Text(
+                      'Forgot password?',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Sign In Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: BlocConsumer<AuthCubit, AuthState>(
+                    bloc: cubit,
+                    listener: (context, state) {
+                      // Listen for state changes
+                      if (state is AuthAuthenticated) {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          AppRoutes.home,
+
+                          (route) => false, // Remove all previous routes
+                        );
+                      } else if (state is AuthError) {
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(state.message)));
+                      }
+                    },
+                    buildWhen: (previous, current) {
+                      return current is! AuthAuthenticated;
+                    },
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else {
+                        return ElevatedButton(
+                          onPressed: () async {
+                            if (formKey.currentState!.validate()) {
+                              await cubit.loginWithEmailAndPassword(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            elevation: 5,
+                            shadowColor: AppColors.primaryColor.withOpacity(
+                              0.4,
+                            ),
+                          ),
+                          child: const Text(
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Divider
+                Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        'Or continue with',
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade300)),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                // Social Buttons
+                BlocConsumer<AuthCubit, AuthState>(
+                  bloc: BlocProvider.of<AuthCubit>(context),
+                  listener: (context, state) {
+                    if (state is GoogleAuthenticationFailed) {
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
+                    } else if (state is GoogleAuthenticated) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        AppRoutes.home,
+                        (route) => false,
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is GoogleAuthenticating) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else {
+                      return _buildSocialButton(
+                        // Google Button
+                        method: 'Google',
+                        iconUrl:
+                            'https://cdn-icons-png.flaticon.com/128/300/300221.png',
+                        onTap: () {
+                          cubit.authenticateWithGoogle();
+                        },
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildSocialButton(
+                  // Facebook Button
+                  method: 'Facebook',
+                  iconUrl:
+                      'https://cdn-icons-png.flaticon.com/128/5968/5968764.png',
+                  onTap: () {},
+                ),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account? ",
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, AppRoutes.signUp);
+                      },
+                      child: Text(
+                        'Create Account',
+                        style: TextStyle(
+                          color: AppColors.primaryColor,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
-    final user = userCredential.user;
-    if (user == null) {
-      return false;
-    } else {
-      return true;
-    }
   }
 
-  @override
-  Future<bool> registerWithEmailAndPassword(
-    String email,
-    String password,
-  ) async {
-    final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
+  // Helper Widgets
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool isPassword = false,
+    TextInputType inputType = TextInputType.text,
+  }) {
+    return TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'This field cannot be empty';
+        }
+        return null;
+      },
+      controller: controller,
+      obscureText: isPassword ? !_isPasswordVisible : false,
+      keyboardType: inputType,
+      style: const TextStyle(fontWeight: FontWeight.w500),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
+        filled: true,
+        fillColor: const Color(0xFFF7F7F9),
+        prefixIcon: Icon(icon, color: Colors.grey.shade500),
+        suffixIcon: isPassword
+            ? IconButton(
+                icon: Icon(
+                  _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                  color: Colors.grey.shade500,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _isPasswordVisible = !_isPasswordVisible;
+                  });
+                },
+              )
+            : null,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: AppColors.primaryColor, width: 1.5),
+        ),
+      ),
     );
-    final user = userCredential.user;
-    if (user == null) {
-      return false;
-    } else {
-      return true;
-    }
   }
 
-  @override
-  User? get currentUser => _firebaseAuth.currentUser;
+  Widget _buildSocialButton({
+    required String method,
+    required String iconUrl,
+    required Function onTap,
+  }) {
+    return Container(
+      height: 56,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.05),
+            offset: const Offset(0, 4),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => onTap(),
+          borderRadius: BorderRadius.circular(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CachedNetworkImage(
+                imageUrl: iconUrl,
+                width: 24,
+                height: 24,
+                memCacheHeight: 24,
+                memCacheWidth: 24,
 
-  @override
-  Future<void> logout() async {
-    GoogleSignIn.instance.signOut();
-    await _firebaseAuth.signOut();
-  }
-
-  @override
-  Future<bool> authenticateWithGoogle() async {
-    try {
-      await GoogleSignIn.instance.initialize(); // Ensure initialization
-      await GoogleSignIn.instance.signOut();
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
-          .authenticate(); // Trigger the authentication flow
-
-      if (googleUser == null) return false;
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        // Create a new credential
-        accessToken: googleAuth.idToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final UserCredential userCredential = await _firebaseAuth
-          .signInWithCredential(credential);
-
-      final user = userCredential.user;
-      if (user == null) {
-        return false;
-      } else {
-        return true;
-      }
-    } catch (e) {
-      debugPrint('Google Sign-In Error: $e');
-      return false;
-    }
+                placeholder: (context, url) =>
+                    const SizedBox(width: 24, height: 24),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                'Sign in with $method',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
