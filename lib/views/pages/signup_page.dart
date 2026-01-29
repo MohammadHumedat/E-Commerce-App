@@ -139,6 +139,7 @@ class _SignupPageState extends State<SignupPage> {
                     listener: (context, state) {
                       if (state is AuthAuthenticated) {
                         Navigator.pop(context);
+
                       } else if (state is AuthError) {
                         ScaffoldMessenger.of(
                           context,
@@ -156,6 +157,7 @@ class _SignupPageState extends State<SignupPage> {
                             await cubit.registerWithEmailAndPassword(
                               _emailController.text.trim(),
                               _passwordController.text.trim(),
+                              _nameController.text.trim(),
                             );
                           }
                         },

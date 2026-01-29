@@ -9,7 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductDetailsPage extends StatelessWidget {
   const ProductDetailsPage({super.key, required this.productId});
-  final int productId;
+  final String productId;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +42,7 @@ class ProductDetailsPage extends StatelessWidget {
           return Scaffold(
             body: Center(
               child: ElevatedButton(
-                onPressed: () => cubit.fetchProductDetails(productId),
+                onPressed: () => cubit.loadProductDetails(productId.toString()),
                 child: const Text('Load Product Details'),
               ),
             ),
@@ -394,7 +394,7 @@ class ProductDetailsPage extends StatelessWidget {
                                   ),
                                   onPressed: () {
                                     if (cubit.selectedSize != null) {
-                                      cubit.addToCart(productId);
+                                      cubit.addToCart();
                                     } else {
                                       ScaffoldMessenger.of(
                                         context,

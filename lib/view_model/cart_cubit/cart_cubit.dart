@@ -18,6 +18,7 @@ class CartCubit extends Cubit<CartState> {
 
   Future<void> updateQuantityById(int productId, int newQuantity) async {
     final index = addToCartItems.indexWhere(
+      // ignore: unrelated_type_equality_checks
       (item) => item.product.id == productId,
     );
 
@@ -36,6 +37,7 @@ class CartCubit extends Cubit<CartState> {
 
   // Remove the item when click on remove item.
   Future<void> removeItemById(int productId) async {
+  // ignore: unrelated_type_equality_checks
   addToCartItems.removeWhere((item) => item.product.id == productId);
 
   double totalPrice = addToCartItems.fold(

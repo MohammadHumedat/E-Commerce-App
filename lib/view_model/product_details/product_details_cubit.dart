@@ -1,5 +1,7 @@
 import 'package:e_commerce_app/models/add_to_cart_model.dart';
 import 'package:e_commerce_app/models/product_item.dart';
+import 'package:e_commerce_app/services/auth_service.dart';
+import 'package:e_commerce_app/services/product_detailes_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 part 'product_details_state.dart';
@@ -7,51 +9,49 @@ part 'product_details_state.dart';
 class ProductDetailsCubit extends Cubit<ProductDetailsState> {
   ProductDetailsCubit() : super(ProductDetailsInitial());
 
+  final productDetailsService = ProductDetailsServiceImpl();
   ProductSize? selectedSize;
-  int cartQuantity = 1; // NEW: separate counter for cart quantity
+  int cartQuantity = 1;
+  final List<AddToCartModel> addToCartItems = [];
 
-  Future<void> fetchProductDetails(int productId) async {
+  
+  Future<void> loadProductDetails(String productId) async {
     emit(ProductDetailsLoading());
 
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
+      final fetchedProduct = await productDetailsService.fetchProductDetails(
+        productId,
+      );
 
-      final product = productItems.firstWhere((p) => p.id == productId);
-
-      // Reset cart quantity when loading a new product
-      cartQuantity = 1;
-      selectedSize = null;
-
-      emit(ProductDetailsLoaded(product));
+      emit(ProductDetailsLoaded(fetchedProduct));
     } catch (e) {
-      emit(ProductDetailsError('Failed to load product details'));
+      emit(ProductDetailsError('Failed to load product details: $e'));
     }
   }
 
-  void incrementQuantity(int productId) {
+  void incrementQuantity(String productId) {
     if (state is! ProductDetailsLoaded) return;
 
     final currentProduct = (state as ProductDetailsLoaded).product;
 
-    // Don't allow adding more than available stock
     if (cartQuantity < currentProduct.quantity) {
       cartQuantity++;
-      emit(ProductDetailsLoaded(currentProduct)); // Re-emit the loaded state
+      emit(ProductDetailsLoaded(currentProduct));
     }
   }
 
-  void decrementQuantity(int productId) {
+  void decrementQuantity(String productId) {
     if (state is! ProductDetailsLoaded) return;
 
     final currentProduct = (state as ProductDetailsLoaded).product;
 
     if (cartQuantity > 1) {
       cartQuantity--;
-      emit(ProductDetailsLoaded(currentProduct)); // Re-emit the loaded state
+      emit(ProductDetailsLoaded(currentProduct));
     }
   }
 
-  void selectSize(int productId, ProductSize size) {
+  void selectSize(String productId, ProductSize size) {
     if (state is! ProductDetailsLoaded) return;
 
     final currentProduct = (state as ProductDetailsLoaded).product;
@@ -61,35 +61,66 @@ class ProductDetailsCubit extends Cubit<ProductDetailsState> {
     emit(ProductDetailsLoaded(currentProduct.copyWith(size: size)));
   }
 
-  Future<void> addToCart(int productId) async {
+  Future<void> addToCart() async {
     if (state is! ProductDetailsLoaded) return;
 
     final currentProduct = (state as ProductDetailsLoaded).product;
 
+    // Size check
     if (selectedSize == null) {
       emit(ProductDetailsError('You must select a size first'));
-      emit(ProductDetailsLoaded(currentProduct)); // Return to loaded state
+      // Reload the product state after error
+      Future.delayed(const Duration(seconds: 2), () {
+        emit(ProductDetailsLoaded(currentProduct));
+      });
+      return;
+    }
+
+    // Stock check
+    if (cartQuantity > currentProduct.quantity) {
+      emit(ProductAddingToCartError('Not enough stock'));
+      Future.delayed(const Duration(seconds: 2), () {
+        emit(ProductDetailsLoaded(currentProduct));
+      });
       return;
     }
 
     emit(ProductAddingToCart());
 
-    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      final authService = AuthServiceImpl();
+      final user = authService.currentUser;
 
-    final newItem = AddToCartModel(
-      id: productId,
-      product: currentProduct,
-      quantity: cartQuantity, // Use cartQuantity instead of product.quantity
-      size: selectedSize!,
-      
-    );
+      if (user == null) {
+        emit(ProductAddingToCartError('Please login first'));
+        Future.delayed(const Duration(seconds: 2), () {
+          emit(ProductDetailsLoaded(currentProduct));
+        });
+        return;
+      }
 
-    addToCartItems.add(newItem);
+      final cartItem = AddToCartModel(
+        id: '${currentProduct.id}_${selectedSize!.name}',
+        product: currentProduct,
+        quantity: cartQuantity,
+        size: selectedSize!,
+      );
 
-    emit(ProductAddedToCart(productId));
+      await productDetailsService.addToCart(cartItem, user.uid);
 
-    // Reset quantity after adding to cart and return to loaded state
-    cartQuantity = 1;
-    emit(ProductDetailsLoaded(currentProduct));
+      emit(ProductAddedToCart(currentProduct.id));
+
+      // Reset quantity and size after success
+      cartQuantity = 1;
+      selectedSize = null;
+
+      // Reload the product state
+      emit(ProductDetailsLoaded(currentProduct.copyWith(size: null)));
+    } catch (e) {
+      emit(ProductAddingToCartError('Failed to add product to cart: $e'));
+      Future.delayed(const Duration(seconds: 2), () {
+        emit(ProductDetailsLoaded(currentProduct));
+      });
+    }
   }
 }

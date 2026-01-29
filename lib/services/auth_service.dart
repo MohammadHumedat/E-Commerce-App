@@ -57,13 +57,11 @@ class AuthServiceImpl implements AuthService {
     try {
       await GoogleSignIn.instance.initialize(); // Ensure initialization
       await GoogleSignIn.instance.signOut();
-      final GoogleSignInAccount? googleUser = await GoogleSignIn.instance
+
+      final GoogleSignInAccount googleUser = await GoogleSignIn.instance
           .authenticate(); // Trigger the authentication flow
 
-      if (googleUser == null) return false;
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         // Create a new credential

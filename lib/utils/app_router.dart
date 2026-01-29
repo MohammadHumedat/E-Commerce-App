@@ -26,7 +26,7 @@ class AppRouter {
             create: (context) => AuthCubit(),
             child: const LoginPage(),
           ),
-        ); 
+        );
 
       case '/sign_up':
         return MaterialPageRoute(
@@ -52,12 +52,12 @@ class AppRouter {
           ),
         );
       case '/product_details':
-        final productId = settings.arguments as int;
+        final productId = settings.arguments as String;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) {
               final cubit = ProductDetailsCubit();
-              cubit.fetchProductDetails(productId);
+              cubit.loadProductDetails(productId);
               return cubit;
             },
             child: ProductDetailsPage(productId: productId),

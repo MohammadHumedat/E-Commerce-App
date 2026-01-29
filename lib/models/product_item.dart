@@ -1,6 +1,50 @@
-enum ProductSize { s, m, L, x, xL }
+enum ProductSize {
+  s,
+  m,
+  L,
+  x,
+  xL;
+
+  static ProductSize fromString(String size) {
+    switch (size.toLowerCase()) {
+      case 's':
+        return ProductSize.s;
+      case 'm':
+        return ProductSize.m;
+      case 'l':
+        return ProductSize.L;
+      case 'x':
+        return ProductSize.x;
+      case 'xl':
+        return ProductSize.xL;
+      default:
+        return ProductSize.m;
+    }
+  }
+
+  String toShortString() {
+    return toString().split('.').last;
+  }
+}
 
 class ProductItem {
+  factory ProductItem.fromMap(Map<String, dynamic> map, {String? documentId}) {
+    return ProductItem(
+      id: documentId ?? map['id'] ?? '',
+      productName: map['productName'] ?? '',
+      category: map['category'] ?? '',
+      price: (map['price'] ?? 0).toDouble(),
+      imgURL: map['imgURL'] ?? '',
+      description: map['description'],
+      quantity: (map['quantity'] ?? 0).toInt(),
+
+      isFavorite: map['isFavorite'] ?? false,
+      size: map['size'] != null
+          ? ProductSize.fromString(map['size'].toString())
+          : null,
+    );
+  }
+
   ProductItem({
     required this.id,
     required this.productName,
@@ -12,7 +56,8 @@ class ProductItem {
     this.quantity = 0,
     this.size,
   });
-  final int id;
+
+  final String id;
   final String productName;
   final String category;
   final double price;
@@ -23,7 +68,7 @@ class ProductItem {
   final ProductSize? size;
 
   ProductItem copyWith({
-    int? id,
+    String? id,
     String? productName,
     String? category,
     double? price,
@@ -45,11 +90,30 @@ class ProductItem {
       size: size ?? this.size,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'productName': productName,
+      'category': category,
+      'price': price,
+      'imgURL': imgURL,
+      'description': description,
+      'quantity': quantity,
+      'isFavorite': isFavorite,
+      if (size != null) 'size': size!.toShortString(),
+    };
+  }
+
+  @override
+  String toString() {
+    return 'ProductItem(id: $id, name: $productName, price: \$$price, qty: $quantity)';
+  }
 }
 
+// Sample data
 List<ProductItem> productItems = [
   ProductItem(
-    id: 1,
+    id: '1',
     productName: 'Classic T-Shirt',
     category: 'Shirt',
     price: 13.5,
@@ -59,7 +123,7 @@ List<ProductItem> productItems = [
     quantity: 10,
   ),
   ProductItem(
-    id: 2,
+    id: '2',
     productName: 'Denim Jacket',
     category: 'Jacket',
     price: 45.0,
@@ -69,7 +133,7 @@ List<ProductItem> productItems = [
     quantity: 5,
   ),
   ProductItem(
-    id: 3,
+    id: '3',
     productName: 'Running Shoes',
     category: 'Shoes',
     price: 60.0,
@@ -79,7 +143,7 @@ List<ProductItem> productItems = [
     quantity: 8,
   ),
   ProductItem(
-    id: 4,
+    id: '4',
     productName: 'Leather Belt',
     category: 'Accessories',
     price: 20.0,
@@ -89,7 +153,7 @@ List<ProductItem> productItems = [
     quantity: 15,
   ),
   ProductItem(
-    id: 5,
+    id: '5',
     productName: 'Casual Hoodie',
     category: 'Sweatshirt',
     price: 30.0,
@@ -100,7 +164,7 @@ List<ProductItem> productItems = [
     quantity: 12,
   ),
   ProductItem(
-    id: 6,
+    id: '6',
     productName: 'Sport Shoes',
     category: 'Shoes',
     price: 40.0,
@@ -110,7 +174,7 @@ List<ProductItem> productItems = [
     quantity: 20,
   ),
   ProductItem(
-    id: 7,
+    id: '7',
     productName: 'Summer Dress',
     category: 'Dress',
     price: 35.0,
@@ -120,7 +184,7 @@ List<ProductItem> productItems = [
     quantity: 7,
   ),
   ProductItem(
-    id: 8,
+    id: '8',
     productName: 'Sneakers',
     category: 'Shoes',
     price: 55.0,
@@ -130,7 +194,7 @@ List<ProductItem> productItems = [
     quantity: 18,
   ),
   ProductItem(
-    id: 9,
+    id: '9',
     productName: 'Baseball Cap',
     category: 'Accessories',
     price: 12.0,
@@ -140,7 +204,7 @@ List<ProductItem> productItems = [
     quantity: 25,
   ),
   ProductItem(
-    id: 10,
+    id: '10',
     productName: 'Leather Wallet',
     category: 'Accessories',
     price: 25.0,

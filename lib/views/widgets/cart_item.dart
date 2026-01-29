@@ -115,14 +115,14 @@ class CartItem extends StatelessWidget {
                       value: item.quantity,
                       onIncrease: () {
                         cartCubit.updateQuantityById(
-                          item.product.id,
+                          item.product.id as int,
                           item.quantity + 1,
                         );
                       },
                       onDecrease: () {
                         if (item.quantity > 1) {
                           cartCubit.updateQuantityById(
-                            item.product.id,
+                            item.product.id as int,
                             item.quantity - 1,
                           );
                         }
@@ -130,7 +130,7 @@ class CartItem extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        cartCubit.removeItemById(item.product.id);
+                        cartCubit.removeItemById(item.product.id as int);
                       },
                       icon: const Icon(Icons.delete, color: Colors.red),
                     ),
