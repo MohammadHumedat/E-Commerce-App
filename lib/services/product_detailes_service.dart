@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 abstract class ProductDetailsService {
   Future<ProductItem> fetchProductDetails(String productId);
   Future<void> addToCart(AddToCartModel cartItem, String userId);
+  
 }
 
 class ProductDetailsServiceImpl implements ProductDetailsService {
@@ -40,8 +41,7 @@ class ProductDetailsServiceImpl implements ProductDetailsService {
   }
 }
 
-/// Helper function to upload initial products to Firestore
-/// Call this ONCE from your app to populate the database
+
 Future<void> uploadInitialProducts() async {
   final firestoreService = FirestoreService.instance;
 
@@ -63,12 +63,12 @@ Future<void> uploadInitialProducts() async {
   }
 }
 
-/// Alternative: Upload products in a batch (faster)
+//Alternative: Upload products in a batch (faster)
 Future<void> uploadInitialProductsBatch() async {
   final firestoreService = FirestoreService.instance;
 
   try {
-    debugPrint('🚀 Starting batch upload of products to Firestore...');
+    debugPrint(' Starting batch upload of products to Firestore...');
 
     final operations = productItems.map((product) {
       return BatchSetOperation(
@@ -80,7 +80,7 @@ Future<void> uploadInitialProductsBatch() async {
     await firestoreService.batchWrite(operations: operations);
 
     debugPrint(
-      '🎉 All ${productItems.length} products uploaded successfully in batch!',
+      ' All ${productItems.length} products uploaded successfully in batch!',
     );
   } catch (e) {
     debugPrint(' Error in batch upload: $e');
@@ -92,7 +92,7 @@ Future<void> debugFirebaseConnection() async {
   debugPrint('🔍 === FIREBASE DEBUG START ===');
 
   try {
-    // 1. Check Firebase Auth
+    // Check Firebase Auth
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       debugPrint(' User is logged in: ${user.email}');
@@ -100,21 +100,21 @@ Future<void> debugFirebaseConnection() async {
       debugPrint(' User is NOT logged in (anonymous access)');
     }
 
-    // 2. Check Firestore instance
+    // Check Firestore instance
     final firestore = FirebaseFirestore.instance;
-    debugPrint('✅ Firestore instance created');
+    debugPrint('Firestore instance created');
 
-    // 3. Try to read products collection directly
-    debugPrint('🔍 Attempting to read products collection...');
+    // Try to read products collection directly
+    debugPrint(' Attempting to read products collection...');
 
     final snapshot = await firestore.collection('products').get();
 
-    debugPrint('📦 Collection exists: ${snapshot.docs.isNotEmpty}');
-    debugPrint('📦 Number of documents: ${snapshot.docs.length}');
+    debugPrint(' Collection exists: ${snapshot.docs.isNotEmpty}');
+    debugPrint(' Number of documents: ${snapshot.docs.length}');
 
     if (snapshot.docs.isEmpty) {
-      debugPrint('⚠️ WARNING: Products collection is EMPTY!');
-      debugPrint('⚠️ Possible reasons:');
+      debugPrint(' WARNING: Products collection is EMPTY!');
+      debugPrint(' Possible reasons:');
       debugPrint('   1. Collection name is wrong (check Firebase Console)');
       debugPrint('   2. Firebase Rules are blocking access');
       debugPrint('   3. No products have been uploaded yet');
@@ -122,23 +122,23 @@ Future<void> debugFirebaseConnection() async {
       // Try to list all collections
       debugPrint('🔍 Trying to check if collection exists...');
     } else {
-      debugPrint('✅ Products found!');
+      debugPrint(' Products found!');
 
       // Show first product details
       final firstDoc = snapshot.docs.first;
-      debugPrint('📄 First product ID: ${firstDoc.id}');
-      debugPrint('📄 First product data: ${firstDoc.data()}');
+      debugPrint(' First product ID: ${firstDoc.id}');
+      debugPrint(' First product data: ${firstDoc.data()}');
     }
 
-    debugPrint('🔍 === FIREBASE DEBUG END ===');
+    debugPrint(' === FIREBASE DEBUG END ===');
   } catch (e, stackTrace) {
-    debugPrint('❌ ERROR in Firebase debug:');
-    debugPrint('❌ Error: $e');
-    debugPrint('❌ StackTrace: $stackTrace');
+    debugPrint(' ERROR in Firebase debug:');
+    debugPrint(' Error: $e');
+    debugPrint(' StackTrace: $stackTrace');
   }
 }
 
-/// Widget to add to your app for easy debugging
+// Widget to add to your app for easy debugging
 class FirebaseDebugButton extends StatelessWidget {
   const FirebaseDebugButton({super.key});
 
@@ -147,6 +147,7 @@ class FirebaseDebugButton extends StatelessWidget {
     return ElevatedButton.icon(
       onPressed: () async {
         await debugFirebaseConnection();
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Check Debug Console for results'),

@@ -13,8 +13,26 @@ class HomeTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<HomeCubit, HomeState>(
-      bloc: BlocProvider.of<HomeCubit>(context),
+    return BlocConsumer<HomeCubit, HomeState>(
+      // Listen for favorite actions to show feedback
+      listener: (context, state) {
+        if (state is FavoriteItemAddError) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  '${state.message} for the product ID ${state.productId}',
+                ),
+                backgroundColor: Colors.red,
+              ),
+            );
+          });
+        }
+      },
+      buildWhen: (previous, current) =>
+          current is HomeLoaded ||
+          current is HomeLoading ||
+          current is HomeError,
       builder: (context, state) {
         if (state is HomeLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -34,20 +52,19 @@ class HomeTabView extends StatelessWidget {
                 child: Column(
                   children: [
                     FlutterCarousel.builder(
-                      itemCount: state.dummyCarousel.length,
+                      itemCount: state.carouselItems.length,
                       itemBuilder: (context, index, realIndex) {
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: Stack(
                             fit: StackFit.expand,
                             children: [
-                              // Image from the carousel model(Actually from the internet)
+                              // Image from the carousel model
                               CachedNetworkImage(
-                                imageUrl: state.dummyCarousel[index].imageUrl,
+                                imageUrl: state.carouselItems[index].imageUrl,
                                 fit: BoxFit.fill,
                                 memCacheHeight: 150,
                                 memCacheWidth: 300,
-
                                 placeholder: (context, url) => const Center(
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
@@ -62,8 +79,7 @@ class HomeTabView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
-                              // Make a gradient over the image, to make the text more visible
+                              // Gradient overlay
                               Container(
                                 decoration: const BoxDecoration(
                                   gradient: LinearGradient(
@@ -90,14 +106,12 @@ class HomeTabView extends StatelessWidget {
                         enableInfiniteScroll: true,
                         showIndicator: true,
                         indicatorMargin: 4.0,
-
                         slideIndicator: CircularSlideIndicator(
                           slideIndicatorOptions: const SlideIndicatorOptions(
                             indicatorBorderColor: Colors.transparent,
                             indicatorBackgroundColor: Colors.white54,
                             currentIndicatorColor: Colors.orange,
                             indicatorRadius: 2.5,
-
                             padding: EdgeInsets.only(bottom: 8),
                           ),
                         ),
@@ -116,13 +130,11 @@ class HomeTabView extends StatelessWidget {
                                 fontWeight: FontWeight.w500,
                               ),
                         ),
-
                         Text(
                           'See All',
                           style: Theme.of(context).textTheme.bodyLarge!
                               .copyWith(
                                 color: AppColors.primaryColor,
-
                                 fontWeight: FontWeight.w900,
                               ),
                         ),
@@ -139,15 +151,10 @@ class HomeTabView extends StatelessWidget {
                             crossAxisCount: 2,
                             mainAxisSpacing: 10,
                             crossAxisSpacing: 10,
-                            childAspectRatio:
-                                0.70, // control height vs width ratio
+                            childAspectRatio: 0.70,
                           ),
-
                       itemBuilder: (context, index) {
                         return InkWell(
-                          child: ProductItemCard(
-                            productItem: state.productItems[index],
-                          ),
                           onTap: () {
                             // Navigate to product details page
                             Navigator.of(
@@ -158,6 +165,9 @@ class HomeTabView extends StatelessWidget {
                               arguments: state.productItems[index].id,
                             );
                           },
+                          child: ProductItemCard(
+                            productItem: state.productItems[index],
+                          ),
                         );
                       },
                     ),

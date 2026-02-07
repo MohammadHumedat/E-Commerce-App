@@ -1,5 +1,7 @@
 import 'package:e_commerce_app/models/product_item.dart';
+import 'package:e_commerce_app/view_model/home_cubit/home_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProductItemCard extends StatelessWidget {
   const ProductItemCard({super.key, required this.productItem});
@@ -7,6 +9,8 @@ class ProductItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final homeCubit = context.read<HomeCubit>();
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -68,21 +72,82 @@ class ProductItemCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    child: IconButton(
-                      icon: Icon(
-                        productItem.isFavorite
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: productItem.isFavorite
-                            ? Colors.red
-                            : Colors.grey[600],
-                        size: 20,
-                      ),
-                      onPressed: () {
-                        // Handle favorite toggle
+                    child: BlocBuilder<HomeCubit, HomeState>(
+                      buildWhen: (previous, current) =>
+                          current is HomeLoaded ||
+                          (current is FavoriteAdded &&
+                              current.productId == productItem.id) ||
+                          (current is FavoriteRemoved &&
+                              current.productId == productItem.id) ||
+                          (current is FavoriteItemAddError &&
+                              current.productId == productItem.id),
+                      builder: (context, state) {
+                        bool isFavorite = false;
+
+                        // Check if product is in favorites
+                        if (state is HomeLoaded) {
+                          isFavorite = state.favoriteProductIds.contains(
+                            productItem.id,
+                          );
+                        }
+                        if (state is FavoriteAdded) {
+                          isFavorite = state.productId == productItem.id
+                              ? true
+                              : isFavorite;
+                        } else if (state is FavoriteRemoved) {
+                          isFavorite = state.productId == productItem.id
+                              ? false
+                              : isFavorite;
+                        }
+
+                        if (state is FavoriteItemAddError) {
+                          // Optionally show a snackbar or some feedback
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  '${state.message} for the product ${productItem.productName}',
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          });
+                        }
+
+                        return IconButton(
+                          icon: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.grey[600],
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            homeCubit.toggleFavorite(productItem);
+                            if (isFavorite) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Removed ${productItem.productName} from favorites',
+                                  ),
+                                  duration: const Duration(seconds: 1),
+                                  backgroundColor: Colors.orange,
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Added ${productItem.productName} to favorites',
+                                  ),
+                                  duration: const Duration(seconds: 1),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            }
+                          },
+                          padding: const EdgeInsets.all(8),
+                          constraints: const BoxConstraints(),
+                        );
                       },
-                      padding: const EdgeInsets.all(8),
-                      constraints: const BoxConstraints(),
                     ),
                   ),
                 ),
@@ -120,7 +185,6 @@ class ProductItemCard extends StatelessWidget {
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const SizedBox(height: 5),
                   // Product Name

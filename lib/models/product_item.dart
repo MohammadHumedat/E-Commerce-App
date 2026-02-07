@@ -38,7 +38,7 @@ class ProductItem {
       description: map['description'],
       quantity: (map['quantity'] ?? 0).toInt(),
 
-      isFavorite: map['isFavorite'] ?? false,
+     // isFavorite: map['isFavorite'] ?? false,
       size: map['size'] != null
           ? ProductSize.fromString(map['size'].toString())
           : null,
@@ -99,7 +99,7 @@ class ProductItem {
       'imgURL': imgURL,
       'description': description,
       'quantity': quantity,
-      'isFavorite': isFavorite,
+     // 'isFavorite': isFavorite,
       if (size != null) 'size': size!.toShortString(),
     };
   }

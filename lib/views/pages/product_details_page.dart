@@ -304,7 +304,7 @@ class ProductDetailsPage extends StatelessWidget {
             ],
           ),
 
-          /// --- ADD TO CART ---
+          ///  ADD TO CART 
           bottomNavigationBar: SafeArea(
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),

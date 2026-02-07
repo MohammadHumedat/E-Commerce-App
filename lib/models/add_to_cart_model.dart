@@ -25,7 +25,7 @@ class AddToCartModel {
       'id': id,
       'product': product.toMap(),
       'quantity': quantity,
-      'size': size.toShortString(), // FIXED: was incorrectly calling fromString
+      'size': size.toShortString(), //was incorrectly calling fromString
     };
   }
 
