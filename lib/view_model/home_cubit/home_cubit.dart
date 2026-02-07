@@ -2,6 +2,7 @@ import 'package:e_commerce_app/models/category_model.dart';
 import 'package:e_commerce_app/models/product_item.dart';
 import 'package:e_commerce_app/models/slider_carousel_model.dart';
 import 'package:e_commerce_app/services/auth_service.dart';
+import 'package:e_commerce_app/services/favorite_service.dart';
 import 'package:e_commerce_app/services/home_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,7 +11,7 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   HomeCubit() : super(HomeInitial());
   final _homeService = HomeServiceImp();
-
+  final FavoriteServiceImpl _favoriteService = FavoriteServiceImpl();
   // Store favorite product IDs for quick lookup
   Set<String> _favoriteProductIds = {};
 
@@ -43,7 +44,9 @@ class HomeCubit extends Cubit<HomeState> {
       final user = authService.currentUser;
 
       if (user != null) {
-        final favoriteProducts = await _homeService.fetchFavoriteData(user.uid);
+        final favoriteProducts = await _favoriteService.loadFavoriteData(
+          user.uid,
+        );
         _favoriteProductIds = favoriteProducts.map((p) => p.id).toSet();
       }
     } catch (e) {
@@ -68,7 +71,6 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final isFavorite = _favoriteProductIds.contains(product.id);
 
-      
       if (isFavorite) {
         _favoriteProductIds.remove(product.id);
         emit(FavoriteRemoved(productId: product.id));
@@ -92,9 +94,9 @@ class HomeCubit extends Cubit<HomeState> {
 
       // Perform backend operation
       if (isFavorite) {
-        await _homeService.removeFavoriteItem(product.id, user.uid);
+        await _favoriteService.removeFavorite(product.id, user.uid);
       } else {
-        await _homeService.addFavoriteItem(product, user.uid);
+        await _favoriteService.addFavorite(user.uid, product);
       }
     } catch (e) {
       // Revert optimistic update on error

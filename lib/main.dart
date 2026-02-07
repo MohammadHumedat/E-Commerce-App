@@ -2,6 +2,7 @@ import 'package:e_commerce_app/Constants/app_routes.dart';
 import 'package:e_commerce_app/firebase_options.dart';
 import 'package:e_commerce_app/utils/app_router.dart';
 import 'package:e_commerce_app/view_model/auth_cubit/auth_cubit.dart';
+import 'package:e_commerce_app/view_model/favorite_cubit/favorite_cubit.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,12 +35,24 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final cubit = AuthCubit();
-        cubit.checkAuthentication();
-        return cubit;
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<FavoriteCubit>(
+          create: (context) {
+            final cubit = FavoriteCubit();
+            cubit.loadFavoriteItems();
+            return cubit;
+          },
+        ),
+        BlocProvider<AuthCubit>(
+          create: (context) {
+            final cubit = AuthCubit();
+            cubit.checkAuthentication();
+            return cubit;
+          },
+        ),
+      ],
+
       child: BlocBuilder<AuthCubit, AuthState>(
         buildWhen: (previous, current) =>
             current is AuthAuthenticated || current is AuthUnauthenticated,
