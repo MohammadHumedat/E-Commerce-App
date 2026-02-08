@@ -89,7 +89,7 @@ Future<void> uploadInitialProductsBatch() async {
 }
 
 Future<void> debugFirebaseConnection() async {
-  debugPrint('🔍 === FIREBASE DEBUG START ===');
+  debugPrint(' FIREBASE DEBUG START ');
 
   try {
     // Check Firebase Auth

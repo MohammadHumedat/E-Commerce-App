@@ -19,6 +19,6 @@ class ApiPaths {
   static String favoriteProduct(String userId, String productId) =>
       'users/$userId/favorites/$productId';
 
-
   static String favoriteData(String userId) => 'users/$userId/favorites/';
+  static String fetchCartItems(String userId) => 'users/$userId/cart/';
 }

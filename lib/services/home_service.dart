@@ -41,20 +41,20 @@ class HomeServiceImp implements HomeService {
   @override
   Future<List<ProductItem>> fetchHomeData() async {
     try {
-      debugPrint('🔍 Fetching products from: ${ApiPaths.products()}');
+      debugPrint('Fetching products from: ${ApiPaths.products()}');
 
       final result = await firestoreService.getCollection<ProductItem>(
         path: ApiPaths.products(),
         queryBuilder: (data, documentId) {
-          debugPrint('📦 Processing product: $documentId');
+          debugPrint(' Processing product: $documentId');
           return ProductItem.fromMap(data, documentId: documentId);
         },
       );
 
-      debugPrint('✅ Fetched ${result.length} products');
+      debugPrint(' Fetched ${result.length} products');
       return result;
     } catch (e) {
-      debugPrint('❌ Error fetching products: $e');
+      debugPrint(' Error fetching products: $e');
       rethrow;
     }
   }
@@ -68,10 +68,10 @@ class HomeServiceImp implements HomeService {
           return SliderCarouselModel.fromMap(data);
         },
       );
-      debugPrint('✅ Fetched ${result.length} Carousels Data');
+      debugPrint(' Fetched ${result.length} Carousels Data');
       return result;
     } catch (e) {
-      debugPrint('❌ Error fetching Carousel data: $e');
+      debugPrint(' Error fetching Carousel data: $e');
       rethrow;
     }
   }
@@ -83,10 +83,10 @@ class HomeServiceImp implements HomeService {
         path: ApiPaths.category(),
         queryBuilder: (data, documentId) => CategoryModel.fromMap(data),
       );
-      debugPrint('✅ Fetched ${result.length} Category Data');
+      debugPrint(' Fetched ${result.length} Category Data');
       return result;
     } catch (e) {
-      debugPrint('❌ Error fetching Category data: $e');
+      debugPrint(' Error fetching Category data: $e');
       rethrow;
     }
   }
@@ -95,7 +95,7 @@ class HomeServiceImp implements HomeService {
   // Future<void> addFavoriteItem(ProductItem product, String userId) async {
   //   try {
   //     debugPrint(
-  //       '➕ Adding product ${product.id} to favorites for user $userId',
+  //       ' Adding product ${product.id} to favorites for user $userId',
   //     );
 
   //     await firestoreService.setData(
@@ -103,9 +103,9 @@ class HomeServiceImp implements HomeService {
   //       data: product.toMap(),
   //     );
 
-  //     debugPrint('✅ Successfully added to favorites');
+  //     debugPrint(' Successfully added to favorites');
   //   } catch (e) {
-  //     debugPrint('❌ Error adding to favorites: $e');
+  //     debugPrint(' Error adding to favorites: $e');
   //     rethrow;
   //   }
   // }
