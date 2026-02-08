@@ -71,6 +71,7 @@ class HomeCubit extends Cubit<HomeState> {
     try {
       final isFavorite = _favoriteProductIds.contains(product.id);
 
+      // Optimistic update
       if (isFavorite) {
         _favoriteProductIds.remove(product.id);
         emit(FavoriteRemoved(productId: product.id));
@@ -92,9 +93,9 @@ class HomeCubit extends Cubit<HomeState> {
         );
       }
 
-      // Perform backend operation
+      // Perform backend operation with correct parameter order
       if (isFavorite) {
-        await _favoriteService.removeFavorite(product.id, user.uid);
+        await _favoriteService.removeFavorite(user.uid, product.id);
       } else {
         await _favoriteService.addFavorite(user.uid, product);
       }

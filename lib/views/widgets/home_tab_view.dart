@@ -167,6 +167,7 @@ class HomeTabView extends StatelessWidget {
                           },
                           child: ProductItemCard(
                             productItem: state.productItems[index],
+                            
                           ),
                         );
                       },
