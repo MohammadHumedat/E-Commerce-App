@@ -8,7 +8,7 @@ class FirestoreService {
 
   FirebaseFirestore get firestore => FirebaseFirestore.instance;
 
-  /// Set data
+  // Set data
   Future<void> setData({
     required String path,
     required Map<String, dynamic> data,
@@ -24,7 +24,7 @@ class FirestoreService {
     }
   }
 
-  /// Update data (special fields only)
+  // Update data (special fields only)
   Future<void> updateData({
     required String path,
     required Map<String, dynamic> data,
@@ -40,7 +40,7 @@ class FirestoreService {
     }
   }
 
-  /// Add data (document with auto-generated ID)
+  // Add data (document with auto-generated ID)
   Future<String> addData({
     required String collectionPath,
     required Map<String, dynamic> data,
@@ -59,8 +59,8 @@ class FirestoreService {
 
   // Read data
 
-  /// Get single document
-  /// T is a generic type parameter representing the type of the returned object.
+  // Get single document
+  // T is a generic type parameter representing the type of the returned object.
   Future<T> getDocument<T>({
     required String path,
     required T Function(Map<String, dynamic>? data, String documentId)

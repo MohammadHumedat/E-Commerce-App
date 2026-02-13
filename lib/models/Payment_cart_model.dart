@@ -9,6 +9,31 @@ class PaymentCardModel {
     required this.cVV,
     required this.paymentType,
   });
+  factory PaymentCardModel.fromMap(
+    Map<String, dynamic> map,
+    String documentId,
+  ) {
+    return PaymentCardModel(
+      id: documentId,
+      holderName: map['holderName'] ?? '',
+      cardNumber: map['cardNumber'] ?? '',
+      expiryDate: map['expiryDate'] ?? '',
+      cVV: map['cVV'] ?? '',
+      paymentType: PaymentType.values.firstWhere(
+        (e) => e.name == map['paymentType'],
+        orElse: () => PaymentType.visa,
+      ),
+    );
+  }
+  Map<String, dynamic> toMap() {
+    return {
+      'holderName': holderName,
+      'cardNumber': cardNumber,
+      'expiryDate': expiryDate,
+      'cVV': cVV,
+      'paymentType': paymentType.name,
+    };
+  }
 
   String id;
   String holderName;
@@ -26,6 +51,25 @@ class PaymentCardModel {
       paymentType == PaymentType.paypal ||
       paymentType == PaymentType.googlePay ||
       paymentType == PaymentType.applePay;
+
+  PaymentCardModel copyWith({
+    // Add copyWith method for easy updates
+    String? id,
+    String? holderName,
+    String? cardNumber,
+    String? expiryDate,
+    String? cVV,
+    PaymentType? paymentType,
+  }) {
+    return PaymentCardModel(
+      id: id ?? this.id,
+      holderName: holderName ?? this.holderName,
+      cardNumber: cardNumber ?? this.cardNumber,
+      expiryDate: expiryDate ?? this.expiryDate,
+      cVV: cVV ?? this.cVV,
+      paymentType: paymentType ?? this.paymentType,
+    );
+  }
 }
 
 List<PaymentCardModel> dummyPaymentCardList = [

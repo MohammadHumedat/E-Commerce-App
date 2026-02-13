@@ -21,4 +21,16 @@ class ApiPaths {
 
   static String favoriteData(String userId) => 'users/$userId/favorites/';
   static String fetchCartItems(String userId) => 'users/$userId/cart/';
+
+  static String addPaymentMethod(String userId, String paymentId) =>
+      'users/$userId/PaymentMethods/$paymentId';
+  static String fetchPaymentMethod(String userId) =>
+      'users/$userId/PaymentMethods/';
+
+  static String removePaymentMethod(String userId, String paymentId) =>
+      'users/$userId/PaymentMethods/$paymentId';
+
+        static String updatePaymentMethod(String userId, String methodId) =>
+      'users/$userId/paymentMethods/$methodId';
+
 }

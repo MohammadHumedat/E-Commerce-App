@@ -7,49 +7,86 @@ part 'cart_state.dart';
 
 class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
+
   final _cartServices = CartServiceImp();
-  void getCartItems() async {
+  final _authService = AuthServiceImpl();
+
+  Future<void> getCartItems() async {
     emit(CartPageLoading());
-    final currentUser = AuthServiceImpl();
-    final userId = currentUser.currentUser!.uid;
-    final cartItems= await _cartServices.loadCartItems(userId);
-    double totalPrice = addToCartItems.fold(
-      0,
-      (sum, item) => sum + item.totalPrice,
-    );
-    emit(CartPageLoaded(cartItems, totalPrice));
-  }
 
-  Future<void> updateQuantityById(int productId, int newQuantity) async {
-    final index = addToCartItems.indexWhere(
-      // ignore: unrelated_type_equality_checks
-      (item) => item.product.id == productId,
-    );
+    try {
+      final userId = _authService.currentUser?.uid;
+      if (userId == null) {
+        emit(CartPageError('User not logged in'));
+        return;
+      }
 
-    if (index != -1) {
-      addToCartItems[index] = addToCartItems[index].copyWith(
-        quantity: newQuantity,
-      );
+      final cartItems = await _cartServices.loadCartItems(userId);
 
-      double totalPrice = addToCartItems.fold(
-        0,
+      final totalPrice = cartItems.fold<double>(
+        0.0,
         (sum, item) => sum + item.totalPrice,
       );
-      emit(CartPageLoaded(List.from(addToCartItems), totalPrice));
+
+      emit(CartPageLoaded(cartItems, totalPrice));
+    } catch (e) {
+      emit(CartPageError('Failed to load cart: ${e.toString()}'));
     }
   }
 
-  // Remove the item when click on remove item.
-  Future<void> removeItemById(int productId) async {
-    // ignore: unrelated_type_equality_checks
-    addToCartItems.removeWhere((item) => item.product.id == productId);
+  Future<void> updateQuantityById(String itemId, int newQuantity) async {
+    final currentState = state;
+    if (currentState is! CartPageLoaded) return;
 
-    double totalPrice = addToCartItems.fold(
-      0,
-      (sum, item) => sum + item.totalPrice,
-    );
+    try {
+      final userId = _authService.currentUser?.uid;
+      if (userId == null) return;
 
-    emit(CartItemRemoved(productId));
-    emit(CartPageLoaded(List.from(addToCartItems), totalPrice));
+      final updatedItems = currentState.cartItems.map((item) {
+        if (item.id == itemId) {
+          return item.copyWith(quantity: newQuantity);
+        }
+        return item;
+      }).toList();
+
+      final totalPrice = updatedItems.fold<double>(
+        0.0,
+        (sum, item) => sum + item.totalPrice,
+      );
+
+      emit(CartPageLoaded(updatedItems, totalPrice));
+
+      await _cartServices.updateCartItemQuantity(userId, itemId, newQuantity);
+    } catch (e) {
+      await getCartItems();
+      emit(CartPageError('Failed to update quantity: ${e.toString()}'));
+    }
+  }
+
+  Future<void> removeItemById(String itemId) async {
+    final currentState = state;
+    if (currentState is! CartPageLoaded) return;
+
+    try {
+      final userId = _authService.currentUser?.uid;
+      if (userId == null) return;
+
+      final updatedItems = currentState.cartItems
+          .where((item) => item.id != itemId)
+          .toList();
+
+      final totalPrice = updatedItems.fold<double>(
+        0.0,
+        (sum, item) => sum + item.totalPrice,
+      );
+
+      emit(CartItemRemoved(itemId));
+      emit(CartPageLoaded(updatedItems, totalPrice));
+
+      await _cartServices.removeCartItem(userId, itemId);
+    } catch (e) {
+      await getCartItems();
+      emit(CartPageError('Failed to remove item: ${e.toString()}'));
+    }
   }
 }

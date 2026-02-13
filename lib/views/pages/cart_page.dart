@@ -23,7 +23,7 @@ class CartPage extends StatelessWidget {
         if (state is CartPageLoading) {
           return const Center(child: CircularProgressIndicator());
         } else if (state is CartPageError) {
-          return Center(child: Text(state.massage));
+          return Center(child: Text(state.message));
         } else if (state is CartPageLoaded) {
           final cartItems = state.cartItems;
           if (cartItems.isEmpty) {

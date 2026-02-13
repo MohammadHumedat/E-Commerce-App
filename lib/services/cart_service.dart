@@ -5,6 +5,12 @@ import 'package:flutter/material.dart';
 
 abstract class CartService {
   Future<List<AddToCartModel>> loadCartItems(String userId);
+  Future<void> updateCartItemQuantity(
+    String userId,
+    String cartItemId,
+    int newQuantity,
+  );
+  Future<void> removeCartItem(String userId, String cartItemId);
 }
 
 class CartServiceImp extends CartService {
@@ -27,6 +33,38 @@ class CartServiceImp extends CartService {
       return result;
     } catch (e) {
       debugPrint(' Error fetching cart items: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeCartItem(String userId, String cartItemId) async {
+    // remove the document of specific cart item as a whole.
+    try {
+      debugPrint('Removing cart item: $cartItemId');
+      await _firestoreService.deleteData(
+        path: ApiPaths.cartItem(userId, cartItemId),
+      );
+      debugPrint('Successfully removed cart item');
+    } catch (error) {
+      debugPrint('Error removing cart item: $error');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> updateCartItemQuantity(
+    // Update the quantity field in cart item.
+    String userId,
+    String cartItemId,
+    int newQuantity,
+  ) async {
+    try {
+      await _firestoreService.updateData(
+        path: ApiPaths.cartItem(userId, cartItemId),
+        data: {'quantity': newQuantity},
+      );
+    } catch (error) {
       rethrow;
     }
   }

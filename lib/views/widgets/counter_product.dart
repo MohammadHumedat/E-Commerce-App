@@ -24,7 +24,7 @@ class ModernCounter extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // ----------- DECREASE -----------
+          //DECREASE 
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
@@ -52,7 +52,7 @@ class ModernCounter extends StatelessWidget {
 
           const SizedBox(width: 14),
 
-          /// ---------------- VALUE ----------------
+          //VALUE
           AnimatedSwitcher(
             duration: const Duration(milliseconds: 200),
             transitionBuilder: (child, anim) =>
@@ -66,7 +66,7 @@ class ModernCounter extends StatelessWidget {
 
           const SizedBox(width: 14),
 
-          // ----------- INCREASE -----------
+          //  INCREASE 
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: onIncrease,

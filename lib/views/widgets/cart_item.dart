@@ -24,10 +24,24 @@ class CartItem extends StatelessWidget {
         }
 
         if (state is CartPageError) {
-          return Center(child: Text(state.massage));
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
         }
 
         if (state is CartPageLoaded) {
+          final currentItem = state.cartItems.firstWhere(
+            (element) => element.id == item.id,
+            orElse: () => item,
+          );
+
           return Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(12),
@@ -49,7 +63,7 @@ class CartItem extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    item.product.imgURL,
+                    currentItem.product.imgURL,
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
@@ -64,41 +78,24 @@ class CartItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        // Product Name
-                        item.product.productName,
+                        currentItem.product.productName,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 6),
-                      BlocBuilder<CartCubit, CartState>(
-                        buildWhen: (previous, current) =>
-                            current is CartPageLoaded,
-                        builder: (context, state) {
-                          if (state is CartPageLoaded) {
-                            final currentItem = state.cartItems.firstWhere(
-                              (element) =>
-                                  element.product.id == item.product.id &&
-                                  element.size == item.size,
-                            );
-
-                            return Text(
-                              '\$${(currentItem.quantity * currentItem.product.price).toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 15,
-                                color: Colors.green,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            );
-                          }
-
-                          return const SizedBox.shrink();
-                        },
+                      Text(
+                        '\$${currentItem.totalPrice.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.green,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        'Size: ${item.size.name}',
+                        'Size: ${currentItem.size.name}',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -112,25 +109,25 @@ class CartItem extends StatelessWidget {
                 Column(
                   children: [
                     ModernCounter(
-                      value: item.quantity,
+                      value: currentItem.quantity,
                       onIncrease: () {
                         cartCubit.updateQuantityById(
-                          item.product.id as int,
-                          item.quantity + 1,
+                          currentItem.id,
+                          currentItem.quantity + 1,
                         );
                       },
                       onDecrease: () {
-                        if (item.quantity > 1) {
+                        if (currentItem.quantity > 1) {
                           cartCubit.updateQuantityById(
-                            item.product.id as int,
-                            item.quantity - 1,
+                            currentItem.id,
+                            currentItem.quantity - 1,
                           );
                         }
                       },
                     ),
                     IconButton(
                       onPressed: () {
-                        cartCubit.removeItemById(item.product.id as int);
+                        cartCubit.removeItemById(currentItem.id);
                       },
                       icon: const Icon(Icons.delete, color: Colors.red),
                     ),

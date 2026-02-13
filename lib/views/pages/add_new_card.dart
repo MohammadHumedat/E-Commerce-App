@@ -56,7 +56,7 @@ class _AddNewCardState extends State<AddNewCard> {
   }
 
   @override
-  void dispose() {
+  void dispose() { // Dispose controllers to free resources
     _cardNumberController.dispose();
     _cardHolderController.dispose();
     _expiryDateController.dispose();
