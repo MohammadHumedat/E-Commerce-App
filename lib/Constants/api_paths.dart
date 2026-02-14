@@ -30,7 +30,13 @@ class ApiPaths {
   static String removePaymentMethod(String userId, String paymentId) =>
       'users/$userId/PaymentMethods/$paymentId';
 
-        static String updatePaymentMethod(String userId, String methodId) =>
+  static String updatePaymentMethod(String userId, String methodId) =>
       'users/$userId/paymentMethods/$methodId';
+
+  static String locations(String userId) => 'users/$userId/locations';
+  static String addLocation(String userId, String locationId) =>
+      'users/$userId/locations/$locationId';
+  static String deleteLocation(String userId, String locationId) =>
+      'users/$userId/locations/$locationId';
 
 }

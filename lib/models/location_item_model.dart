@@ -1,4 +1,13 @@
 class LocationItemModel {
+
+  factory LocationItemModel.fromMap(Map<String, dynamic> data, String documentId) {
+    return LocationItemModel(
+      id: documentId,
+      city: data['city'] ?? '',
+      country: data['country'] ?? '',
+      imgURL: data['imgURL'] ?? '',
+    );
+  }
   LocationItemModel({
     required this.id,
     required this.city,
@@ -9,6 +18,13 @@ class LocationItemModel {
   String city;
   String country;
   String imgURL;
+  Map<String, dynamic> toMap() {
+    return {
+      'city': city,
+      'country': country,
+      'imgURL': imgURL,
+    };
+  }
 }
 
 List<LocationItemModel> dummyLocationItems = [

@@ -17,7 +17,9 @@ class _ChosenAddressState extends State<ChosenAddress> {
   @override
   void initState() {
     super.initState();
-    context.read<LocationCubit>().fetchLocations();
+    context
+        .read<LocationCubit>()
+        .fetchLocations(); // Fetch locations when the screen initializes
   }
 
   @override
@@ -111,7 +113,7 @@ class _ChosenAddressState extends State<ChosenAddress> {
           hintText: 'Enter City - Country...',
           hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 15),
           prefixIcon: Icon(
-            Icons.location_searching_rounded,
+            Icons.location_on_outlined,
             color: AppColors.primaryColor,
           ),
           suffixIcon: Container(

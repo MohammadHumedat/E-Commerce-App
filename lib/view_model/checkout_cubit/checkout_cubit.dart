@@ -103,15 +103,12 @@ class CheckoutCubit extends Cubit<CheckoutState> {
     try {
       await Future.delayed(const Duration(seconds: 2));
 
-      // TODO: هنا يمكن إضافة:
-      // 1. حفظ الطلب في Firebase
-      // 2. تفريغ السلة
-      // 3. إرسال إشعار
+     
 
       emit(ConfirmPaymentSuccess());
     } catch (e) {
       emit(ConfirmPaymentFailure('Payment failed: ${e.toString()}'));
-      emit(currentState); // إرجاع الحالة السابقة
+      emit(currentState); 
     }
   }
 

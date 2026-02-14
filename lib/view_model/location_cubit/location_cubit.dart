@@ -1,3 +1,5 @@
+import 'package:e_commerce_app/services/auth_service.dart';
+import 'package:e_commerce_app/services/location_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:e_commerce_app/models/location_item_model.dart';
 
@@ -8,49 +10,62 @@ class LocationCubit extends Cubit<LocationState> {
 
   // Track the ID of the selected location internally
   String? _selectedId;
-
-  void fetchLocations() async {
-    emit(LocationsFetching());
-    await Future.delayed(const Duration(milliseconds: 800)); // Simulate network
-    
-    // In a real app, wrap this in try-catch
-    final locations = dummyLocationItems;
-    if (locations.isNotEmpty) {
-      _selectedId ??= locations.first.id;
-      emit(LocationsFetched(locations: locations, selectedId: _selectedId!));
-    } else {
-      emit(LocationFetchEmpty());
+  final _locationService = LocationServiceImp();
+  final _authService = AuthServiceImpl();
+  Future<void> fetchLocations() async {
+    try {
+      final userId = _authService.currentUser!.uid;
+      emit(LocationsFetching());
+      final locations = await _locationService.fetchLocations(userId);
+      if (locations.isNotEmpty) {
+        _selectedId ??= locations.first.id;
+        emit(LocationsFetched(locations: locations, selectedId: _selectedId!));
+      } else {
+        emit(LocationFetchEmpty());
+      }
+    } catch (error) {
+      rethrow;
     }
   }
 
   void selectLocation(String id) {
+    if (state is! LocationsFetched) return;
+
+    final currentState = state as LocationsFetched;
+
     _selectedId = id;
-    if (state is LocationsFetched) {
-      final currentLocations = (state as LocationsFetched).locations;
-      emit(LocationsFetched(locations: currentLocations, selectedId: _selectedId!));
-    }
+
+    emit(
+      LocationsFetched(
+        locations: currentState.locations,
+        selectedId: _selectedId!,
+      ),
+    );
   }
 
-  void addLocation(String location) async {
-    if (!location.contains('-')) {
-      emit(LocationAddingFailure(message: 'Use format: City-Country'));
-      return;
-    }
-
+  Future<void> addLocation(String location) async {
     emit(LocationAdding());
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      if (!location.contains('-')) {
+        emit(LocationAddingFailure(message: 'Use format: City-Country'));
+        return;
+      }
+      final splitLocation = location.split('-');
+      final newLocation = LocationItemModel(
+        id: '', // Firestore will generate the ID
+        city: splitLocation[0].trim(),
+        country: splitLocation[1].trim(),
+        imgURL: 'https://cdn-icons-png.flaticon.com/512/1865/1865269.png',
+      );
+      final userId = _authService.currentUser!.uid;
+      await _locationService.addLocation(userId, newLocation);
 
-    final splitLocation = location.split('-');
-    final newLocation = LocationItemModel(
-      id: DateTime.now().toIso8601String(),
-      city: splitLocation[0].trim(),
-      country: splitLocation[1].trim(),
-      imgURL: 'https://cdn-icons-png.flaticon.com/512/1865/1865269.png',
-    );
-
-    dummyLocationItems.add(newLocation);
-    _selectedId = newLocation.id; // Automatically select the new one
-    emit(LocationAdded(location: newLocation));
-    emit(LocationsFetched(locations: List.from(dummyLocationItems), selectedId: _selectedId!));
+      final locations = await _locationService.fetchLocations(userId);
+      _selectedId = newLocation.id; // Automatically select the new one
+      emit(LocationAdded(location: newLocation));
+      emit(LocationsFetched(locations: locations, selectedId: _selectedId!));
+    } catch (error) {
+      rethrow;
+    }
   }
 }
